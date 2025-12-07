@@ -8,6 +8,10 @@
 * Trăistaru Alexandra
 * Zaharioiu Robert-Nicolae
 
+## Getting Started (Development Setup)
+
+**To set up the project locally and begin development, please refer to the dedicated guide: [DEVELOPMENT.md](DEVELOPMENT.md)**. This file contains all necessary Docker commands for building, running, and testing code changes.
+
 ## Introduction:
 
 The “Parallax - Movie Universe” project aims to develop a comprehensive, Python-predominant web application that serves as a personalized movie discovery and tracking platform. The application is designed to combine the informational depth of a movie database like IMDb with the user-centric, personalized functionalities of a service such as Netflix.
