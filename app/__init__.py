@@ -8,7 +8,7 @@ database = SQLAlchemy()
 login_manager = LoginManager()
 
 # Set route for login page if user is not authenticated
-login_manager.login_view = 'login'
+login_manager.login_view = 'main.login'
 login_manager.login_message_category = 'info'   # Flash message category
 
 def create_app(config_class=Config):
@@ -22,12 +22,16 @@ def create_app(config_class=Config):
     database.init_app(app)
     login_manager.init_app(app)
 
+    from app import models
+
     # Import and register blueprints
     from app.routes.main_routes import main
     from app.routes.list_routes import lists
+    from app.routes.utility_routes import utility
 
     app.register_blueprint(main)
     app.register_blueprint(lists)
+    app.register_blueprint(utility, url_prefix='/utils')
 
     # Register the user for Flask-Login
     from app.models import User

@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 # from app.utils import generate_qr_code, export_to_csv # Presupunem că aceste funcții sunt în app/utils.py
 
 # Definește Blueprint-ul
-utility = Blueprint('utility', _name_)
+utility = Blueprint('utility', __name__)
 
 # RUTA: Exportă lista de filme văzute (sau de vizionat) ca CSV
 @utility.route('/export/seen_list', methods=['GET'])

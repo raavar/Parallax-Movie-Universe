@@ -1,4 +1,4 @@
-.PHONY: build start stop restart logs clean
+.PHONY: build start database stop restart logs clean
 
 build:
 	@echo "Building and starting Docker containers..."
@@ -9,6 +9,11 @@ start:
 	@echo "Starting Docker containers..."
 	docker compose up -d
 	@echo "Containers started."
+
+database:
+	@echo "Initializing the database with movie data..."
+	docker compose run --rm web python3 populate_database.py
+	@echo "Database initialization complete."
 
 stop:
 	@echo "Stopping Docker containers..."
@@ -22,7 +27,7 @@ restart:
 
 logs:
 	@echo "Showing logs for web container..."
-	docker compose logs -f web
+	docker compose logs web > logs.txt
 
 clean:
 	@echo "Cleaning up unused Docker resources..."
