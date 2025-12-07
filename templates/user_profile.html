@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Profil - {{ user.username }}{% endblock %}
+
+{% block content %}
+    <h1>Profilul Utilizatorului: {{ user.username }}</h1>
+    <p>Email: {{ user.email }}</p>
+    <hr>
+
+    <section class="utility-section">
+        <h2>Codul QR al Profilului</h2>
+        <p>Poți partaja acest cod QR cu prietenii pentru a le facilita accesul la profilul tău.</p>
+        
+        {# Aici afișăm imaginea QR code-ului folosind Base64 URI #}
+        {% if qr_data_uri %}
+            <img src="{{ qr_data_uri }}" alt="QR Code Profil" class="qr-code">
+        {% else %}
+            <p>Nu s-a putut genera codul QR.</p>
+        {% endif %}
+        
+        <hr>
+
+        <h2>Export Date</h2>
+        <p>Apasă butonul de mai jos pentru a descărca lista ta de filme "Văzute" în format CSV.</p>
+        <a href="{{ url_for('export_seen_list') }}" class="btn btn-download">
+            Descărcă Lista Văzute (CSV)
+        </a>
+    </section>
+
+    <section class="movie-lists">
+        <h2>🎬 Listele Mele</h2>
+        
+        <h3>Văzute ({{ seen_movies|length }})</h3>
+        <ul>
+            {% for entry in seen_movies %}
+                <li><a href="{{ url_for('movie_details', movie_id=entry.movie_id) }}">{{ entry.movie.title }}</a> - Adăugat: {{ entry.date_added.strftime('%Y-%m-%d') }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>De Văzut ({{ to_watch_movies|length }})</h3>
+        <ul>
+            {% for entry in to_watch_movies %}
+                <li><a href="{{ url_for('movie_details', movie_id=entry.movie_id) }}">{{ entry.movie.title }}</a> - Adăugat: {{ entry.date_added.strftime('%Y-%m-%d') }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+{% endblock %}
