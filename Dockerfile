@@ -15,7 +15,7 @@ COPY requirements.txt ./
 # Using --no-cache-dir to reduce image size and optimize it
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential \
-    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir -r requirements.txt --default-timeout=1500 \
     && apt-get remove -y build-essential \
     && apt-get autoremove -y \
     && apt-get clean \
@@ -30,5 +30,6 @@ EXPOSE 5000
 # Command to run the Flask application using Gunicorn
 # -w 4: 4 worker processes
 # -b 0.0.0.0:5000: bind to all interfaces on port 5000
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "run:app"]
+# --reload: auto-reload on code changes (useful for development)
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "--reload", "run:app"]
 # Note: Ensure that 'run.py' contains the Flask app instance named 'app'
