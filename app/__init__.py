@@ -23,7 +23,11 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
 
     # Import and register blueprints
-    from app import models, routes
+    from app.routes.main_routes import main
+    from app.routes.list_routes import lists
+
+    app.register_blueprint(main)
+    app.register_blueprint(lists)
 
     # Register the user for Flask-Login
     from app.models import User
