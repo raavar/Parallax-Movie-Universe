@@ -12,7 +12,17 @@ This process handles the large dependencies and ensures the server is running in
 make build
 ```
 
-## 2. 🌐 Access the Application
+## 2. 🗃️ Database Initialization
+
+After the initial image build is complete, you must run the population script to create the database tables and load the initial movie data from movies.csv.
+
+Run this command exactly once:
+
+```bash
+make database
+```
+
+## 3. 🌐 Access the Application
 
 Once the containers are successfully started, the application is accessible via your browser at the following address:
 
@@ -20,14 +30,14 @@ Once the containers are successfully started, the application is accessible via 
 http://localhost:5000
 ```
 
-## 3. ⏯️ Start Project (After **`down`**)
+## 4. ⏯️ Start Project (After **`down`**)
 If the project was stopped using **`docker compose down`**, use this command to start the containers again without rebuilding the image.
 
 ```bash
 make start
 ```
 
-## 4. 🔄 Daily Workflow (Code Changes)
+## 5. 🔄 Daily Workflow (Code Changes)
 
 When you modify the application code (Python, HTML, etc.), **no command is necessary**. The Gunicorn server has been configured with the `--reload` flag, which automatically detects changes in your local source code (due to the volume mount) and restarts the application workers instantly.
 
@@ -39,7 +49,7 @@ If the automatic reload fails to detect changes, use this command to force a res
 make restart
 ```
 
-## 5. 🛑 Shut Down the Project
+## 6. 🛑 Shut Down the Project
 
 To stop and remove the running containers and network (while keeping the persistent database data volume):
 

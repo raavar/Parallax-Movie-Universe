@@ -32,7 +32,7 @@ def populate_movies_from_csv(csv_file_path='movies.csv'):
         try:
             with open(csv_file_path, mode='r', encoding='utf-8') as csv_file:
                 # We are using DictReader to read the CSV file rows as dictionaries
-                csv_reader = csv.DictReader(csv_file)
+                csv_reader = csv.DictReader(csv_file, delimiter=';')
 
                 # Movies list to be added to the database
                 movies_to_add = []
