@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env/
+.venv/
+
+# Database (SQLite files)
+*.sqlite
+*.db
+
+# Docker
+docker-compose.override.yml
+
+# Machine Learning
+/models
+/data
