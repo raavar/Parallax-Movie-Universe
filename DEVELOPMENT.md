@@ -9,7 +9,7 @@ Run this command **once** when starting the project for the first time, or whene
 This process handles the large dependencies and ensures the server is running in the background.
 
 ```bash
-docker compose up --build -d
+make build
 ```
 
 ## 2. 🌐 Access the Application
@@ -24,7 +24,7 @@ http://localhost:5000
 If the project was stopped using **`docker compose down`**, use this command to start the containers again without rebuilding the image.
 
 ```bash
-docker compose up -d
+make start
 ```
 
 ## 4. 🔄 Daily Workflow (Code Changes)
@@ -36,7 +36,7 @@ When you modify the application code (Python, HTML, etc.), **no command is neces
 If the automatic reload fails to detect changes, use this command to force a restart of the web service:
 
 ```bash
-docker compose restart web
+make restart
 ```
 
 ## 5. 🛑 Shut Down the Project
@@ -44,5 +44,5 @@ docker compose restart web
 To stop and remove the running containers and network (while keeping the persistent database data volume):
 
 ```bash
-docker compose down
+make stop
 ```
