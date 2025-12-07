@@ -139,3 +139,64 @@ h1, h2, h3 {
     padding: 5px;
     border-radius: 4px;
 }
+
+/* Stiluri specifice pentru Formularele de Autentificare */
+.form-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.auth-form {
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    box-sizing: border-box; /* Include padding-ul în lățime */
+}
+
+.checkbox-group label {
+    display: inline;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.btn-full-width {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    font-size: 1.1em;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+}
+
+.auth-footer a {
+    color: #4CAF50;
+    text-decoration: none;
+}
