@@ -34,6 +34,7 @@ class Movie(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     title = database.Column(database.String(255), nullable=False)
     description = database.Column(database.Text, nullable=True)
+    release_year = database.Column(database.Integer, nullable=True)
     release_date = database.Column(database.Date, nullable=True)
 
     # Inverse relationships
