@@ -2,6 +2,7 @@
 Flask==2.3.3
 Flask-SqlAlchemy==3.0.5 # For database management
 gunicorn==20.1.0        # WSGI HTTP server for running the Flask app
+psycopg2-binary==2.9.7  # PostgreSQL database adapter
 
 # User Management
 Flask-Login==0.6.3      # For user session management
