@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Acasă{% endblock %}
+
+{% block content %}
+    <h1>Catalog Filme</h1>
+    
+    {% if current_user.is_authenticated %}
+        <section class="recommendations">
+            <h2>✨ Recomandări Pentru Tine</h2>
+            {% if recommendations %}
+                <p>Aici vor fi listate recomandările din Motorul ML...</p>
+                {# Logica de afișare a filmelor recomandate #}
+            {% else %}
+                <p>Începe să evaluezi filme pentru a primi recomandări personalizate!</p>
+            {% endif %}
+        </section>
+        <hr>
+    {% endif %}
+
+    <section class="movie-list-grid">
+        <h2>Toate Filmele (Demo)</h2>
+        {% if movies %}
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
+                    <p>{{ movie.release_year }}</p>
+                    <p class="description">{{ movie.description[:100] }}...</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Catalogul de filme este gol.</p>
+        {% endif %}
+    </section>
+{% endblock %}
