@@ -1,0 +1,202 @@
+/* Fișier: app/static/css/style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: #f0f0f0;
+}
+
+/* Navigare și Antet */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f1f1f;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #4CAF50; /* Culoarea primară */
+    text-decoration: none;
+}
+
+.nav-links a {
+    color: #f0f0f0;
+    text-decoration: none;
+    margin-left: 15px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-links a:hover {
+    background-color: #333;
+}
+
+/* Conținut Principal */
+.container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2, h3 {
+    color: #f0f0f0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+/* Mesaje Flash */
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.alert-success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.alert-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+.alert-warning {
+    background-color: #ff9800;
+    color: #333;
+}
+
+.alert-info {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Butoane și Formulare */
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #555;
+    color: white;
+}
+
+.btn-success {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-download {
+    background-color: #ffcc00;
+    color: #333;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* Grid Filme */
+.movie-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.movie-card {
+    background-color: #1f1f1f;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.movie-card h3 a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+/* QR Code */
+.qr-code {
+    max-width: 150px;
+    height: auto;
+    background-color: white;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+/* Stiluri specifice pentru Formularele de Autentificare */
+.form-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+.auth-form {
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    box-sizing: border-box; /* Include padding-ul în lățime */
+}
+
+.checkbox-group label {
+    display: inline;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.btn-full-width {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    font-size: 1.1em;
+}
+
+.auth-footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+}
+
+.auth-footer a {
+    color: #4CAF50;
+    text-decoration: none;
+}
