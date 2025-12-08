@@ -3,41 +3,26 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from app.config import Config
 
+# Create Flask application instance
+app = Flask(__name__)
+
+# Load configuration from Config class
+app.config.from_object(Config)
+
 # Initialize extensions
-database = SQLAlchemy()
-login_manager = LoginManager()
+database = SQLAlchemy(app)
+login_manager = LoginManager(app)
 
 # Set route for login page if user is not authenticated
-login_manager.login_view = 'main.login'
+login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'   # Flash message category
 
-def create_app(config_class=Config):
-    # Create Flask application instance
-    app = Flask(__name__)
+# Register the user for Flask-Login
+from app.models import User
 
-    # Load configuration from Config class
-    app.config.from_object(config_class)
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
-    # Initialize extensions with the app
-    database.init_app(app)
-    login_manager.init_app(app)
-
-    from app import models
-
-    # Import and register blueprints
-    from app.routes.main_routes import main
-    from app.routes.list_routes import lists
-    from app.routes.utility_routes import utility
-
-    app.register_blueprint(main)
-    app.register_blueprint(lists)
-    app.register_blueprint(utility, url_prefix='/utils')
-
-    # Register the user for Flask-Login
-    from app.models import User
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
-    
-    # Return the Flask application instance
-    return app
+# Import routes to register them with the application
+from app import routes
