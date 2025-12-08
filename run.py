@@ -5,10 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import the main application and database from the app module
-from app import create_app, database
-
-# Create the Flask application instance
-app = create_app()
+from app import app, database
 
 if __name__ == '__main__':
     # Local running logic

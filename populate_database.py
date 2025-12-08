@@ -3,15 +3,12 @@ import csv
 from datetime import date, datetime
 
 from dotenv import load_dotenv
-from app import create_app, database
+from app import app, database
 from app.models import Movie
 from sqlalchemy.exc import IntegrityError
 
 # Load environment variables from .env file
 load_dotenv()
-
-# Create Flask application context
-app = create_app()
 
 # Method to populate the database with movies from a CSV file
 def populate_movies_from_csv(csv_file_path='movies.csv'):
