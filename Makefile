@@ -1,9 +1,13 @@
-.PHONY: build start database stop restart logs clean
+.PHONY: detached_build build start database stop restart logs clean
+
+detached_build:
+	@echo "Building and starting Docker containers in detached mode..."
+	docker compose up --build -d
+	@echo "Build complete."
 
 build:
 	@echo "Building and starting Docker containers..."
-	docker compose up --build -d
-	@echo "Build complete."
+	docker compose up --build
 
 start:
 	@echo "Starting Docker containers..."
