@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Catalog Filme{% endblock %}
+
+{% block content %}
+    <div class="container catalog-page">
+        <h1>Catalog Complet</h1>
+        
+        <section class="filter-sort-controls mb-4">
+            <form method="GET" action="{{ url_for('catalog') }}" id="filterForm">
+                
+                <input type="hidden" name="page" value="1"> 
+                
+                <div class="filter-group mb-3">
+                    <h5 class="filter-heading">GENURI</h5>
+                    <div class="genre-tags-container">
+                        {% for name, count in available_genres %}
+                            {% set is_checked = name in selected_genres %}
+                            <label class="btn btn-tag {% if is_checked %}btn-tag-selected{% else %}btn-tag-default{% endif %}">
+                                <input type="checkbox" name="genre" value="{{ name }}" 
+                                    onchange="this.form.submit()" {% if is_checked %}checked{% endif %}
+                                    style="display: none;">
+                                {{ name }} ({{ count }})
+                            </label>
+                        {% endfor %}
+                        
+                        {% set clear_genre_args = {'sort_by': current_sort, 'min_year': min_year, 'max_year': max_year} %}
+                        <a href="{{ url_for('catalog', **clear_genre_args) }}" class="btn btn-tag btn-sm btn-clear-filter">Șterge Genuri</a>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="filter-group mb-3 d-flex align-items-center">
+                    <h5 class="filter-heading me-3">AN LANSĂRII</h5>
+                    
+                    <label for="min_year" class="me-2">De la:</label>
+                    <input type="number" name="min_year" id="min_year" min="1900" max="2025" 
+                        value="{{ min_year if min_year is not none }}" 
+                        class="form-control me-3" style="width: 100px;">
+                    
+                    <label for="max_year" class="me-2">Până la:</label>
+                    <input type="number" name="max_year" id="max_year" min="1900" max="2025" 
+                        value="{{ max_year if max_year is not none }}" 
+                        class="form-control me-3" style="width: 100px;">
+                    
+                    {% for genre_name in selected_genres %}
+                        <input type="hidden" name="genre" value="{{ genre_name }}">
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn btn-sm btn-success">Aplică Interval</button>
+                </div>
+
+                <hr>
+                
+                <div class="filter-group mb-3 d-flex align-items-center">
+                    <label for="sort-select" class="me-2">Sortare:</label>
+                    <select name="sort_by" id="sort-select" class="form-select" onchange="this.form.submit()" style="min-width: 180px;">
+                        <option value="title_asc" {% if current_sort == 'title_asc' %}selected{% endif %}>Titlu (A-Z)</option>
+                        <option value="title_desc" {% if current_sort == 'title_desc' %}selected{% endif %}>Titlu (Z-A)</option>
+                        <option value="year_desc" {% if current_sort == 'year_desc' %}selected{% endif %}>An Apariție (Nou &rarr; Vechi)</option>
+                        <option value="year_asc" {% if current_sort == 'year_asc' %}selected{% endif %}>An Apariție (Vechi &rarr; Nou)</option>
+                        <option value="date_desc" {% if current_sort == 'date_desc' %}selected{% endif %}>Dată Lansare (Recent &rarr; Vechi)</option>
+                        <option value="date_asc" {% if current_sort == 'date_asc' %}selected{% endif %}>Dată Lansare (Vechi &rarr; Recent)</option>
+                    </select>
+
+                    <input type="hidden" name="min_year" value="{{ min_year if min_year is not none }}">
+                    <input type="hidden" name="max_year" value="{{ max_year if max_year is not none }}">
+                    
+                    </div>
+                
+            </form>
+        </section>
+        
+        <hr>
+        
+        {% set pagination_args = {'genre': selected_genres, 'min_year': min_year, 'max_year': max_year, 'sort_by': current_sort} %}
+
+        <div class="movie-list-grid">
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a></h3>
+                    <p class="small text-muted">
+                        {% for genre in movie.genres %}
+                            <span class="badge bg-secondary">{{ genre.name }}</span>
+                        {% endfor %}
+                    </p>
+                    <p class="description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-secondary">Detalii</a>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="pagination-controls mt-4">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('catalog', page=pagination.prev_num, **pagination_args) }}" class="btn btn-sm btn-outline-primary">
+                    &laquo; Pagina Anterioară
+                </a>
+            {% else %}
+                <span class="btn btn-sm btn-outline-secondary disabled">&laquo; Pagina Anterioară</span>
+            {% endif %}
+            
+            <span class="page-info mx-3">Pagina {{ page }}/{{ pagination.pages }}</span>
+            
+            {% if pagination.has_next %}
+                <a href="{{ url_for('catalog', page=pagination.next_num, **pagination_args) }}" class="btn btn-sm btn-outline-primary">
+                    Pagina Următoare &raquo;
+                </a>
+            {% else %}
+                <span class="btn btn-sm btn-outline-secondary disabled">Pagina Următoare &raquo;</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

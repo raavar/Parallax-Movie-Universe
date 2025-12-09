@@ -2,6 +2,22 @@ from app import database
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from sqlalchemy import UniqueConstraint
+
+# 1. Tabelă de asociere (Fără clasă Model)
+# Aceasta este legătura fizică dintre filme și genuri
+movie_genre_association = database.Table('movie_genre_association', database.metadata,
+    database.Column('movie_id', database.Integer, database.ForeignKey('movie.id'), primary_key=True),
+    database.Column('genre_id', database.Integer, database.ForeignKey('genre.id'), primary_key=True)
+)
+
+# 2. Modelul Genre (Genul propriu-zis)
+class Genre(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    name = database.Column(database.String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"Genre: {self.name}"
 
 # Define User model
 class User(database.Model, UserMixin):
@@ -10,11 +26,17 @@ class User(database.Model, UserMixin):
     username = database.Column(database.String(255), unique=True, nullable=False)
     email = database.Column(database.String(255), unique=True, nullable=False)
     password = database.Column(database.String(255), nullable=False)
+    
+    # NOU: Coloană pentru a marca utilizatorii ca administratori
+    is_admin = database.Column(database.Boolean, default=False)
 
-    # Get user relationships
-    ratings = database.relationship('Rating', backref='user_ratings', lazy=True)
-    seen_list = database.relationship("SeenList", backref='user_seen_list', lazy=True)
-    to_watch_list = database.relationship("ToWatchList", backref='user_to_watch_list', lazy=True)
+    # Corecție Relații: Trecem la back_populates pentru Rating
+    # Relația din User către Rating
+    ratings = database.relationship('Rating', back_populates='user', lazy=True)
+    
+    # Relațiile SeenList și ToWatchList pot folosi backref simplu pentru a evita conflictele complexe
+    seen_list = database.relationship("SeenList", backref='user', lazy=True)
+    to_watch_list = database.relationship("ToWatchList", backref='user', lazy=True)
 
     # Password hashing method
     def set_password(self, password):
@@ -24,9 +46,9 @@ class User(database.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
     
-    # String representation of the User model
+    # String representation of the User model (CRUCIAL pentru Flask-Admin)
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}')"
+        return f"User: {self.username}"
     
 # Define Movie model
 class Movie(database.Model):
@@ -37,12 +59,21 @@ class Movie(database.Model):
     release_year = database.Column(database.Integer, nullable=True)
     release_date = database.Column(database.Date, nullable=True)
 
-    # Inverse relationships
-    ratings = database.relationship('Rating', backref='movie_ratings', lazy=True)
+    # Relația Mulți-la-Mulți (pentru a accesa Movie.genres)
+    genres = database.relationship(
+        'Genre', 
+        secondary=movie_genre_association, # Folosește tabela de asociere
+        backref=database.backref('movies', lazy='dynamic'), 
+        lazy='dynamic'
+    )
 
-    # String representation of the Movie model
+    # Corecție Relații: Trecem la back_populates
+    # Relația din Movie către Rating
+    ratings = database.relationship('Rating', back_populates='movie', lazy=True)
+
+    # String representation of the Movie model (CRUCIAL pentru Flask-Admin)
     def __repr__(self):
-        return f"Movie('{self.title}', '{self.release_date}')"
+        return f"Movie: {self.title} ({self.release_year})"
 
 # Define Rating model
 class Rating(database.Model):
@@ -50,7 +81,13 @@ class Rating(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
-    movie = database.relationship('Movie', backref='ratings_rel', lazy=True)
+    
+    # CORECȚIE: Relația inversă către User (rezolvă AttributeError)
+    user = database.relationship('User', back_populates='ratings', lazy=True) 
+    
+    # CORECȚIE: Relația inversă către Movie (rezolvă conflictele)
+    movie = database.relationship('Movie', back_populates='ratings', lazy=True)
+    
     score = database.Column(database.Integer, nullable=False)
     timestamp = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 

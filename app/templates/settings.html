@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Setări Cont{% endblock %}
+
+{% block content %}
+    <div class="container settings-page">
+        <h1>Setări Cont</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Actualizare Profil</h2>
+                <form method="POST" action="{{ url_for('settings') }}" novalidate>
+                    {{ profile_form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ profile_form.username.label(class="form-control-label") }}
+                        {{ profile_form.username(class="form-control") }}
+                        {% for error in profile_form.username.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ profile_form.email.label(class="form-control-label") }}
+                        {{ profile_form.email(class="form-control") }}
+                        {% for error in profile_form.email.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ profile_form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-md-6">
+                <h2>Schimbă Parola</h2>
+                <form method="POST" action="{{ url_for('settings') }}" novalidate>
+                    {{ password_form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ password_form.old_password.label(class="form-control-label") }}
+                        {{ password_form.old_password(class="form-control") }}
+                        {% for error in password_form.old_password.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ password_form.new_password.label(class="form-control-label") }}
+                        {{ password_form.new_password(class="form-control") }}
+                        {% for error in password_form.new_password.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ password_form.confirm_new_password.label(class="form-control-label") }}
+                        {{ password_form.confirm_new_password(class="form-control") }}
+                        {% for error in password_form.confirm_new_password.errors %}
+                            <span class="text-danger">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ password_form.submit(class="btn btn-warning") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

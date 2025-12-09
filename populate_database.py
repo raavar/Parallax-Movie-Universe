@@ -4,75 +4,103 @@ from datetime import date, datetime
 
 from dotenv import load_dotenv
 from app import app, database
-from app.models import Movie
+# Asigură-te că toate modelele necesare sunt importate
+from app.models import Movie, Genre 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.session import Session 
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Method to populate the database with movies from a CSV file
+# Metodă pentru a popula baza de date cu filme din CSV
 def populate_movies_from_csv(csv_file_path='movies.csv'):
-    # Read movies from CSV file and insert them into the database
     with app.app_context():
-        # Make sure the database tables are created
+        # Asigură-te că tabelele sunt create (inclusiv Movie, Genre și tabela de asociere)
         database.create_all()
 
-        # Check if the database is already populated
-        if Movie.query.count() > 0:
-            print("Database already populated with movies. Exiting.")
-            return
-        
-        # Log message indicating the start of the population process
-        print(f"Populating database with movies from CSV file: {csv_file_path}")
-
-        # Try to populate the database
+        # --- 1. Curățarea Datelor Existente ---
+        print("Curățarea tabelelor Movie și Genre...")
         try:
-            with open(csv_file_path, mode='r', encoding='utf-8') as csv_file:
-                # We are using DictReader to read the CSV file rows as dictionaries
-                csv_reader = csv.DictReader(csv_file, delimiter=';')
+            # Ștergem asocierile Mulți-la-Mulți (prin ștergerea tabelelor)
+            database.session.query(Movie).delete()
+            database.session.query(Genre).delete()
+            
+            # Resetarea secvențelor de ID (pentru PostgreSQL)
+            # Notă: Dacă folosești SQLite sau MySQL, aceste comenzi trebuie ajustate sau șterse.
+            database.session.execute(database.text("ALTER SEQUENCE movie_id_seq RESTART WITH 1"))
+            database.session.execute(database.text("ALTER SEQUENCE genre_id_seq RESTART WITH 1"))
+            database.session.commit()
+            print("Curățare reușită.")
+        except Exception as e:
+            # Capturăm eroarea la resetarea secvențelor (ex: dacă secvența nu există încă sau nu e PostgreSQL)
+            database.session.rollback()
+            # Vom continua chiar dacă resetarea secvenței eșuează, presupunând că delete a funcționat.
+            # print(f"Avertisment la curățarea secvențelor: {e}") 
 
-                # Movies list to be added to the database
-                movies_to_add = []
+        # --- 2. Procesul de Populare ---
+        print(f"Populating database with movies and genres from CSV file: {csv_file_path}")
 
-                # Iterate through each row in the CSV file
-                for row in csv_reader:
-                    # Convert data types as necessary
-                    release_year = int(row['release_year']) if row['release_year'] else None
-                    release_date = datetime.strptime(row['release_date'], '%Y-%m-%d').date() if row['release_date'] else None
+        try:
+            # Dicționar pentru a stoca Genurile unice (Nume: Obiect Genre)
+            existing_genres = {}
+            movies_count = 0
 
-                    # Create a Movie instance
-                    movie = Movie(
-                        title=row['title'],
-                        description=row['description'],
-                        release_year=release_year,
-                        release_date=release_date
-                    )
-                    movies_to_add.append(movie)
+            # CORECȚIA FINALĂ: Folosiți context manager-ul direct pe sesiunea bazei de date.
+            with database.session.no_autoflush:
+                with open(csv_file_path, mode='r', encoding='utf-8') as csv_file:
+                    csv_reader = csv.DictReader(csv_file, delimiter=';')
 
-            # Insert all movies at once into the database for efficiency
-            database.session.bulk_save_objects(movies_to_add)
-
-            # Commit the session to save changes
+                    for row in csv_reader:
+                        movies_count += 1
+                        
+                        # --- PRELUARE DATE (ADĂUGARE CÂMPURI LIPSĂ) ---
+                        release_year = int(row['release_year']) if row.get('release_year') else None
+                        release_date = datetime.strptime(row['release_date'], '%Y-%m-%d').date() if row.get('release_date') else None
+                        
+                        # 1. Crează obiectul Movie
+                        movie = Movie(
+                            title=row['title'],
+                            description=row['description'],
+                            release_year=release_year,
+                            release_date=release_date
+                        )
+                        
+                        # 2. PROCESARE GENURI:
+                        # Extrage lista de genuri din string
+                        genre_list = [g.strip() for g in row.get('genres', '').split(',') if g.strip()]
+                        
+                        for genre_name in genre_list:
+                            if genre_name not in existing_genres:
+                                # 3. Caută/Creează Genul (Avertismentul este rezolvat prin no_autoflush)
+                                genre_obj = Genre.query.filter_by(name=genre_name).first() 
+                                
+                                if not genre_obj:
+                                    genre_obj = Genre(name=genre_name)
+                                    database.session.add(genre_obj)
+                                
+                                existing_genres[genre_name] = genre_obj
+                            
+                            # 4. Asociază Genul cu Filmul
+                            movie.genres.append(existing_genres[genre_name])
+                            
+                        # Adaugă filmul la sesiune
+                        database.session.add(movie)
+            
+            # --- 3. Salvare Finală ---
             database.session.commit()
 
-            # Log success message
-            print(f"Successfully populated database with {len(movies_to_add)} movies.")
+            print(f"Successfully populated database with {movies_count} movies.")
+            print(f"Total {len(existing_genres)} genuri unice create.")
+
 
         except FileNotFoundError:
-            # Log error if the CSV file is not found
-            print(f"Error: CSV file '{csv_file_path}' not found.")
+            print(f"Eroare: Fișierul CSV '{csv_file_path}' nu a fost găsit.")
         except IntegrityError:
-            # Rollback the session in case of integrity error
             database.session.rollback()
-
-            # Log integrity error message
-            print("Error: Integrity error occurred while inserting movies into the database.")
+            print("Eroare: A apărut o eroare de integritate (date duplicate).")
         except Exception as e:
-            # Rollback the session in case of any other exceptions
             database.session.rollback()
-
-            # Log any other exceptions that occur
-            print(f"An unexpected error occurred: {e}")
+            print(f"A apărut o eroare neașteptată: {e}")
             
 if __name__ == '__main__':
     populate_movies_from_csv()

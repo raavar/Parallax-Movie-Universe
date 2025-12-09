@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Filme Văzute și Evaluările Mele{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <h1>Filme Văzute și Evaluările Mele ({{ seen_movies|length }} Filme)</h1>
+        <hr>
+        
+        {% if seen_movies %}
+            <div class="row">
+                {% for data in seen_movies %}
+                    {% set movie = data.movie %}
+                    {% set score = data.score %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a>
+                                </h5>
+                                <p class="card-text mb-1">
+                                    **Evaluarea ta:** <span class="badge bg-warning text-dark fs-5">{{ score }}/10</span> 
+                                    <i class="fas fa-star"></i>
+                                </p>
+                                <p class="card-text small text-muted">
+                                    {% for genre in movie.genres %}
+                                        <span class="badge bg-secondary">{{ genre.name }}</span>
+                                    {% endfor %}
+                                </p>
+                                <div class="mt-auto">
+                                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-outline-primary">Vezi Detalii</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="alert alert-info">Nu ai evaluat încă niciun film. Începe să oferi rating-uri!</p>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -200,3 +200,96 @@ h1, h2, h3 {
     color: #4CAF50;
     text-decoration: none;
 }
+
+/* Containerul de căutare pentru poziționare relativă */
+.search-container {
+    position: relative;
+    display: inline-block; /* Sau blochează-l, depinde de layout-ul tău */
+}
+
+/* Containerul de rezultate (lista derulantă) */
+.autocomplete-results {
+    position: absolute;
+    z-index: 999; /* Asigură că este deasupra altor elemente */
+    top: 100%; /* Plasează sub câmpul de căutare */
+    left: 0;
+    width: 100%; /* Același ca și input-ul */
+    background-color: #333; /* Fundal întunecat */
+    border: 1px solid #555;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    display: none; /* Ascuns implicit */
+    border-top: none;
+    padding: 0;
+    margin: 0;
+
+    /* SETĂRI PENTRU DERULARE */
+    max-height: 250px; /* Setează înălțimea maximă (ex: 5 rezultate * 50px per rezultat) */
+    overflow-y: auto;  /* Afișează bara de derulare verticală doar când e necesar */
+    overflow-x: hidden; /* Ascunde derularea orizontală */
+}
+
+.autocomplete-results ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.autocomplete-results li a {
+    display: block;
+    padding: 10px 10px;
+    text-decoration: none;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.autocomplete-results li a:hover {
+    background-color: #555; /* Evidențiere la hover */
+    color: white;
+}
+
+.filter-heading {
+    color: #ffd700; /* Galben/Auriu pentru titlu */
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.genre-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Spațiere între tag-uri */
+}
+.btn-tag {
+    cursor: pointer;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 20px; /* Margini rotunjite ca un tag */
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Stil pentru tag-ul neselectat */
+.btn-tag-default {
+    background-color: #333;
+    color: #ccc;
+}
+.btn-tag-default:hover {
+    background-color: #555;
+}
+
+/* Stil pentru tag-ul SELECTAT */
+.btn-tag-selected {
+    background-color: #ffd700; /* Culoare de accent */
+    color: #1a1a1a; /* Text închis pe fundal deschis */
+    border-color: #ffd700;
+    font-weight: bold;
+}
+.btn-clear-filter {
+    color: #999;
+    text-decoration: underline;
+    border: none;
+}
+.form-control, .form-select {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+}
