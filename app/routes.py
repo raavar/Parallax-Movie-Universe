@@ -276,6 +276,23 @@ def user_profile(user_id):
                            seen_movies=seen_movies,
                            to_watch_movies=to_watch_movies)
 
+# Ruta pentru exportul listei "De Văzut" ca CSV
+@app.route("/export_to_watch_list", methods=['GET'])
+@login_required
+def export_to_watch_list():
+    """Exportă lista 'De Văzut' a utilizatorului curent în CSV."""
+    
+    # Preluare filme din lista "De Văzut" a utilizatorului logat
+    to_watch_movies = ToWatchList.query.filter_by(user_id=current_user.id).all()
+    
+    if not to_watch_movies:
+        flash('Lista "De Văzut" este goală. Nu există date de exportat.', 'warning')
+        # Redirecționează înapoi la pagina de profil
+        return redirect(url_for('user_profile', user_id=current_user.id))
+
+    # Apelează modulul de export
+    return export_movie_list_to_csv(to_watch_movies, filename="parallax_to_watch_list.csv")
+
 # --- Rută nouă: Export date CSV ---
 
 @app.route("/export_seen_list", methods=['GET'])
