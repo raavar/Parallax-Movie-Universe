@@ -1,7 +1,7 @@
 from flask import render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func, desc, asc, distinct
+from sqlalchemy import func, desc, asc, distinct, and_
 from app import app, database
 from app.models import User, Movie, Rating, SeenList, ToWatchList, Genre
 from app.utility_modules.data_exporter import export_movie_list_to_csv
@@ -33,8 +33,14 @@ def home():
 def catalog():
     # --- Preluare Parametri ---
     page = request.args.get('page', 1, type=int)
-    current_genre_name = request.args.get('genre', None)
-    current_year = request.args.get('year', None)
+    
+    # NOU: Preluare listă de genuri (din butoanele/checkbox-urile frontend)
+    selected_genres = request.args.getlist('genre') 
+    
+    # NOU: Preluare interval de an
+    min_year = request.args.get('min_year', type=int)
+    max_year = request.args.get('max_year', type=int)
+    
     current_sort = request.args.get('sort_by', 'title_asc')
     
     PER_PAGE = 20
@@ -42,23 +48,30 @@ def catalog():
     # Interogarea de bază selectează obiectele Movie
     query = database.session.query(Movie)
     
-    # --- 1. Preluare Genuri Disponibile (pentru filtre) ---
-    # Interogarea corectată pentru a prelua genuri doar din tabela Movie/Genre
+    # --- 1. Preluare Genuri Disponibile (pentru butoanele tag) ---
+    # Interogarea pentru a prelua genuri doar din tabela Movie/Genre
     available_genres = database.session.query(
         Genre.name, func.count(distinct(Movie.id)).label('movie_count')
     ).join(Movie.genres).group_by(Genre.name).order_by(Genre.name).all()
 
 
     # --- 2. Filtrarea ---
-    if current_genre_name:
-        query = query.join(Movie.genres).filter(Genre.name == current_genre_name)
+    
+    # FILTRARE MULTI-GEN (OR logic): Filmele trebuie să aibă CEL PUȚIN unul dintre genurile selectate
+    if selected_genres:
+        # Folosim join pentru a lega Movie de Genre și filtram după genurile selectate
+        query = query.join(Movie.genres).filter(Genre.name.in_(selected_genres))
         
-    if current_year:
-        try:
-            year = int(current_year)
-            query = query.filter(Movie.release_year == year)
-        except (ValueError, TypeError):
-            pass
+    # FILTRARE INTERVAL AN
+    year_filters = []
+    if min_year:
+        year_filters.append(Movie.release_year >= min_year)
+    if max_year:
+        year_filters.append(Movie.release_year <= max_year)
+        
+    if year_filters:
+        # Aplică filtrele de an dacă există
+        query = query.filter(and_(*year_filters)) 
     
     # --- 3. Sortarea ---
 
@@ -84,17 +97,17 @@ def catalog():
         error_out=False
     )
     
-    # Extragem doar obiectele Movie din rezultate
-    # Această extragere este necesară doar dacă am sortat după rating (adică query a returnat tuple)
+    # Nu mai trebuie să extragem din tuple, deoarece nu mai sortăm după rating
     movies_to_display = movies_paginated.items
 
     return render_template('catalog.html',
-                           # ... (restul argumentelor)
                            movies=movies_to_display,
                            pagination=movies_paginated,
-                           available_genres=available_genres, # (name, count)
-                           # ... (restul argumentelor)
-                           )
+                           available_genres=available_genres,
+                           selected_genres=selected_genres,  # NOU: Lista de genuri selectate
+                           min_year=min_year,                # NOU: Anul minim
+                           max_year=max_year,                # NOU: Anul maxim
+                           current_sort=current_sort)
 
 # User registration route
 @app.route('/register', methods=['GET', 'POST'])

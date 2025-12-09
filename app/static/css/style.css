@@ -246,3 +246,50 @@ h1, h2, h3 {
     background-color: #555; /* Evidențiere la hover */
     color: white;
 }
+
+.filter-heading {
+    color: #ffd700; /* Galben/Auriu pentru titlu */
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.genre-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px; /* Spațiere între tag-uri */
+}
+.btn-tag {
+    cursor: pointer;
+    border: 1px solid #555;
+    padding: 6px 12px;
+    border-radius: 20px; /* Margini rotunjite ca un tag */
+    font-size: 0.9em;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Stil pentru tag-ul neselectat */
+.btn-tag-default {
+    background-color: #333;
+    color: #ccc;
+}
+.btn-tag-default:hover {
+    background-color: #555;
+}
+
+/* Stil pentru tag-ul SELECTAT */
+.btn-tag-selected {
+    background-color: #ffd700; /* Culoare de accent */
+    color: #1a1a1a; /* Text închis pe fundal deschis */
+    border-color: #ffd700;
+    font-weight: bold;
+}
+.btn-clear-filter {
+    color: #999;
+    text-decoration: underline;
+    border: none;
+}
+.form-control, .form-select {
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+}
