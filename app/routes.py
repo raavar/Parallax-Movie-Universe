@@ -5,6 +5,7 @@ from app import app, database
 from app.models import User, Movie, Rating, SeenList, ToWatchList
 from app.utility_modules.data_exporter import export_movie_list_to_csv
 from app.utility_modules.qr_generator import generate_user_qr_code
+from app.forms import UpdateProfileForm, ChangePasswordForm
 
 # ==========================================================================================
 # Main Routes
@@ -344,3 +345,51 @@ def search():
                            query=query,
                            results=results,
                            count=count)
+
+## --- Secțiunea de Setări Utilizator ---
+
+@app.route("/settings", methods=['GET', 'POST'])
+@login_required
+def settings():
+    # Inițializarea formularelor
+    profile_form = UpdateProfileForm()
+    password_form = ChangePasswordForm()
+
+    # Pentru validarea unică a profilului, setează ID-ul original al utilizatorului
+    profile_form.original_user_id = current_user.id
+    
+    # --- GESTIONAREA FORMULARULUI DE ACTUALIZARE PROFIL ---
+    if profile_form.validate_on_submit() and profile_form.submit.data:
+        # 1. Verifică dacă datele introduse sunt diferite de cele curente
+        if (current_user.username != profile_form.username.data or 
+            current_user.email != profile_form.email.data):
+            
+            # 2. Actualizează utilizatorul și salvează în baza de date
+            current_user.username = profile_form.username.data
+            current_user.email = profile_form.email.data
+            database.session.commit()
+            
+            flash('Profilul a fost actualizat cu succes!', 'success')
+            return redirect(url_for('settings'))
+
+    # --- GESTIONAREA FORMULARULUI DE SCHIMBARE PAROLĂ ---
+    if password_form.validate_on_submit() and password_form.submit.data:
+        # 1. Verifică parola veche
+        if current_user.check_password(password_form.old_password.data):
+            # 2. Schimbă parola
+            current_user.set_password(password_form.new_password.data)
+            database.session.commit()
+            flash('Parola a fost schimbată cu succes!', 'success')
+            return redirect(url_for('settings'))
+        else:
+            flash('Parola actuală este incorectă.', 'danger')
+            
+    # Populează formularul de profil cu datele curente dacă cererea este GET
+    elif request.method == 'GET':
+        profile_form.username.data = current_user.username
+        profile_form.email.data = current_user.email
+
+    return render_template('settings.html', 
+                           title='Setări Cont',
+                           profile_form=profile_form,
+                           password_form=password_form)
