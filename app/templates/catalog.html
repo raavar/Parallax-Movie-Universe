@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Catalog Filme{% endblock %}
+
+{% block content %}
+    <div class="container catalog-page">
+        <h1>Catalog Complet</h1>
+        <p class="subtitle">Explorați colecția completă de {{ pagination.total }} filme, pagina {{ current_page }}/{{ pagination.pages }}.</p>
+
+        <section class="filters-panel">
+            </section>
+        
+        <div class="movie-list-grid">
+            {% for movie in movies %}
+                <div class="movie-card">
+                    <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a></h3>
+                    <p class="description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-secondary">Detalii</a>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <div class="pagination-controls mt-4">
+            {% if pagination.has_prev %}
+                <a href="{{ url_for('catalog', page=pagination.prev_num) }}" class="btn btn-sm btn-outline-primary">
+                    &laquo; Pagina Anterioară
+                </a>
+            {% else %}
+                <span class="btn btn-sm btn-outline-secondary disabled">&laquo; Pagina Anterioară</span>
+            {% endif %}
+            
+            <span class="page-info mx-3">Pagina {{ current_page }}</span>
+            
+            {% if pagination.has_next %}
+                <a href="{{ url_for('catalog', page=pagination.next_num) }}" class="btn btn-sm btn-outline-primary">
+                    Pagina Următoare &raquo;
+                </a>
+            {% else %}
+                <span class="btn btn-sm btn-outline-secondary disabled">Pagina Următoare &raquo;</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

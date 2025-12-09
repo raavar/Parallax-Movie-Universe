@@ -26,6 +26,31 @@ def home():
     # Render the home template with movies and recommendations
     return render_template('index.html', title='Home', movies=movies, recommendations=recommendations)
 
+# --- Rută 2: Catalogul Complet ('/catalog') cu Paginare ---
+@app.route("/catalog", methods=['GET'])
+def catalog():
+    # Preluare numărul paginii din URL, implicit la pagina 1
+    page = request.args.get('page', 1, type=int) 
+    
+    # Numărul de filme pe pagină
+    PER_PAGE = 20
+    
+    # Creează un obiect paginator
+    movies_paginated = Movie.query.order_by(Movie.title.asc()).paginate(
+        page=page, 
+        per_page=PER_PAGE, 
+        error_out=False
+    )
+    
+    # Filmele pentru pagina curentă
+    movies_current_page = movies_paginated.items 
+    
+    return render_template('catalog.html', 
+                           title='Catalog Filme', 
+                           movies=movies_current_page,
+                           pagination=movies_paginated,         # Obiectul paginator
+                           current_page=page)
+
 # User registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
