@@ -11,20 +11,25 @@
     {# Secțiune pentru JS specific paginii #}
     {% block head_extra %}{% endblock %}
 </head>
+
 <body>
     <header>
         <nav class="navbar">
             <a href="{{ url_for('home') }}" class="logo">PARALLAX</a>
 
-            <form method="GET" action="{{ url_for('search') }}" class="search-form">
-                <input type="text" name="query" placeholder="Caută filme după titlu sau descriere..." required
-                    value="{{ request.args.get('query', '') }}">
-                <button type="submit">Căutare</button>
+            <form method="GET" action="{{ url_for('search') }}" class="search-form" id="searchForm">
+                <div class="search-container">
+                    <input type="text" name="query" id="searchInput" placeholder="Caută filme..." required autocomplete="off">
+                    <button type="submit">Căutare</button>
+                
+                    <div class="autocomplete-results" id="autocompleteResults">
+                    </div>
+                </div>
             </form>
 
             <div class="nav-links">
                 <a href="{{ url_for('catalog') }}">Catalog</a>
-                
+
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('settings') }}">Setări</a>
                     <a href="{{ url_for('user_profile', user_id=current_user.id) }}">Profil</a>

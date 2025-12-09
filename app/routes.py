@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, current_app
+from flask import render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 from app import app, database
@@ -370,6 +370,35 @@ def search():
                            query=query,
                            results=results,
                            count=count)
+
+@app.route("/search_autocomplete")
+def search_autocomplete():
+    query = request.args.get('q', '')
+    
+    if not query:
+        return jsonify([])
+
+    try:
+        search_term = f"%{query}%"
+        suggestions = Movie.query.filter(
+            Movie.title.ilike(search_term)
+        ).limit(15).all()
+
+        results = []
+        for movie in suggestions:
+            results.append({
+                'id': movie.id,
+                'title': f"{movie.title} ({movie.release_year})",
+                'url': url_for('movie_details', movie_id=movie.id)
+            })
+            
+        return jsonify(results)
+        
+    except Exception as e:
+        # Loghează eroarea completă
+        current_app.logger.error(f"Eroare la căutarea autocomplete: {e}") 
+        # Returnează un răspuns gol pentru frontend (dar eroarea e în log-uri)
+        return jsonify([]), 500 # Returnează codul de eroare 500
 
 ## --- Secțiunea de Setări Utilizator ---
 
