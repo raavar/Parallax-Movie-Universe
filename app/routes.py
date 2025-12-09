@@ -1,8 +1,9 @@
 from flask import render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func, desc, asc, distinct
 from app import app, database
-from app.models import User, Movie, Rating, SeenList, ToWatchList
+from app.models import User, Movie, Rating, SeenList, ToWatchList, Genre
 from app.utility_modules.data_exporter import export_movie_list_to_csv
 from app.utility_modules.qr_generator import generate_user_qr_code
 from app.forms import UpdateProfileForm, ChangePasswordForm
@@ -26,30 +27,74 @@ def home():
     # Render the home template with movies and recommendations
     return render_template('index.html', title='Home', movies=movies, recommendations=recommendations)
 
-# --- Rută 2: Catalogul Complet ('/catalog') cu Paginare ---
+# --- Rută: Catalogul Complet ('/catalog') cu Paginare, Filtre și Sortare ---
+
 @app.route("/catalog", methods=['GET'])
 def catalog():
-    # Preluare numărul paginii din URL, implicit la pagina 1
-    page = request.args.get('page', 1, type=int) 
+    # --- Preluare Parametri ---
+    page = request.args.get('page', 1, type=int)
+    current_genre_name = request.args.get('genre', None)
+    current_year = request.args.get('year', None)
+    current_sort = request.args.get('sort_by', 'title_asc')
     
-    # Numărul de filme pe pagină
     PER_PAGE = 20
     
-    # Creează un obiect paginator
-    movies_paginated = Movie.query.order_by(Movie.title.asc()).paginate(
-        page=page, 
-        per_page=PER_PAGE, 
+    # Interogarea de bază selectează obiectele Movie
+    query = database.session.query(Movie)
+    
+    # --- 1. Preluare Genuri Disponibile (pentru filtre) ---
+    # Interogarea corectată pentru a prelua genuri doar din tabela Movie/Genre
+    available_genres = database.session.query(
+        Genre.name, func.count(distinct(Movie.id)).label('movie_count')
+    ).join(Movie.genres).group_by(Genre.name).order_by(Genre.name).all()
+
+
+    # --- 2. Filtrarea ---
+    if current_genre_name:
+        query = query.join(Movie.genres).filter(Genre.name == current_genre_name)
+        
+    if current_year:
+        try:
+            year = int(current_year)
+            query = query.filter(Movie.release_year == year)
+        except (ValueError, TypeError):
+            pass
+    
+    # --- 3. Sortarea ---
+
+    if current_sort == 'year_desc':
+        query = query.order_by(Movie.release_year.desc())
+    elif current_sort == 'year_asc':
+        query = query.order_by(Movie.release_year.asc())
+        
+    elif current_sort == 'date_desc':
+        query = query.order_by(Movie.release_date.desc())
+    elif current_sort == 'date_asc':
+        query = query.order_by(Movie.release_date.asc())
+        
+    elif current_sort == 'title_desc':
+        query = query.order_by(Movie.title.desc())
+    else: # title_asc (Implicit)
+        query = query.order_by(Movie.title.asc())
+
+    # --- 4. Paginarea ---
+    movies_paginated = query.paginate(
+        page=page,
+        per_page=PER_PAGE,
         error_out=False
     )
     
-    # Filmele pentru pagina curentă
-    movies_current_page = movies_paginated.items 
-    
-    return render_template('catalog.html', 
-                           title='Catalog Filme', 
-                           movies=movies_current_page,
-                           pagination=movies_paginated,         # Obiectul paginator
-                           current_page=page)
+    # Extragem doar obiectele Movie din rezultate
+    # Această extragere este necesară doar dacă am sortat după rating (adică query a returnat tuple)
+    movies_to_display = movies_paginated.items
+
+    return render_template('catalog.html',
+                           # ... (restul argumentelor)
+                           movies=movies_to_display,
+                           pagination=movies_paginated,
+                           available_genres=available_genres, # (name, count)
+                           # ... (restul argumentelor)
+                           )
 
 # User registration route
 @app.route('/register', methods=['GET', 'POST'])

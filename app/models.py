@@ -4,6 +4,21 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
 
+# 1. Tabelă de asociere (Fără clasă Model)
+# Aceasta este legătura fizică dintre filme și genuri
+movie_genre_association = database.Table('movie_genre_association', database.metadata,
+    database.Column('movie_id', database.Integer, database.ForeignKey('movie.id'), primary_key=True),
+    database.Column('genre_id', database.Integer, database.ForeignKey('genre.id'), primary_key=True)
+)
+
+# 2. Modelul Genre (Genul propriu-zis)
+class Genre(database.Model):
+    id = database.Column(database.Integer, primary_key=True)
+    name = database.Column(database.String(50), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"Genre: {self.name}"
+
 # Define User model
 class User(database.Model, UserMixin):
     # Get user credentials
@@ -43,6 +58,14 @@ class Movie(database.Model):
     description = database.Column(database.Text, nullable=True)
     release_year = database.Column(database.Integer, nullable=True)
     release_date = database.Column(database.Date, nullable=True)
+
+    # Relația Mulți-la-Mulți (pentru a accesa Movie.genres)
+    genres = database.relationship(
+        'Genre', 
+        secondary=movie_genre_association, # Folosește tabela de asociere
+        backref=database.backref('movies', lazy='dynamic'), 
+        lazy='dynamic'
+    )
 
     # Corecție Relații: Trecem la back_populates
     # Relația din Movie către Rating
