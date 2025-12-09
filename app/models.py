@@ -50,6 +50,7 @@ class Rating(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
+    movie = database.relationship('Movie', backref='ratings_rel', lazy=True)
     score = database.Column(database.Integer, nullable=False)
     timestamp = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
