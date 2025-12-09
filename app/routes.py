@@ -309,3 +309,38 @@ def export_seen_list():
 
     # Apelează modulul de export
     return export_movie_list_to_csv(seen_movies, filename="parallax_seen_list.csv")
+
+
+# --- Rută nouă: Căutare Filme ---
+
+@app.route("/search", methods=['GET'])
+def search():
+    """
+    Gestionează cererile de căutare, interogând baza de date 
+    pentru filme după titlu sau descriere.
+    """
+    # Preluare termen de căutare din URL (ex: /search?query=inception)
+    query = request.args.get('query', '') 
+    
+    results = []
+    
+    if query:
+        # Creează termenul de căutare pentru operatorul LIKE (e.g., "%interstellar%")
+        search_term = f"%{query}%"
+        
+        # Interogarea SQLAlchemy: Caută după titlu SAU descriere (case-insensitive)
+        results = Movie.query.filter(
+            (Movie.title.ilike(search_term)) | 
+            (Movie.description.ilike(search_term))
+        ).all()
+        
+        # Număr de rezultate
+        count = len(results)
+    else:
+        count = 0
+
+    return render_template('search_results.html', 
+                           title=f"Rezultate Căutare: {query}",
+                           query=query,
+                           results=results,
+                           count=count)
