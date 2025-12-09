@@ -17,7 +17,7 @@ def export_movie_list_to_csv(data_list, filename="movie_export.csv"):
         data = []
         for item in data_list:
             # Asigurăm că relația 'movie' este disponibilă (definiți relația 'backref' în models.py)
-            movie = item.movie_rel # Presupunem o relație definită sau încercăm item.movie
+            movie = item.movie # Presupunem o relație definită sau încercăm item.movie
             
             movie_data = {
                 'ID Film': item.movie_id,

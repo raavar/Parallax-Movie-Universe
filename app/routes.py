@@ -263,7 +263,7 @@ def user_profile(user_id):
     user = User.query.get_or_404(user_id)
     
     # Generare QR Code (folosind contextul aplicației)
-    qr_data_uri = generate_user_qr_code(app.app_context(), user_id)
+    qr_data_uri = generate_user_qr_code(user_id)
     
     # Preluare liste de filme (pentru afișare)
     seen_movies = SeenList.query.filter_by(user_id=user_id).all()
@@ -275,6 +275,23 @@ def user_profile(user_id):
                            qr_data_uri=qr_data_uri,
                            seen_movies=seen_movies,
                            to_watch_movies=to_watch_movies)
+
+# Ruta pentru exportul listei "De Văzut" ca CSV
+@app.route("/export_to_watch_list", methods=['GET'])
+@login_required
+def export_to_watch_list():
+    """Exportă lista 'De Văzut' a utilizatorului curent în CSV."""
+    
+    # Preluare filme din lista "De Văzut" a utilizatorului logat
+    to_watch_movies = ToWatchList.query.filter_by(user_id=current_user.id).all()
+    
+    if not to_watch_movies:
+        flash('Lista "De Văzut" este goală. Nu există date de exportat.', 'warning')
+        # Redirecționează înapoi la pagina de profil
+        return redirect(url_for('user_profile', user_id=current_user.id))
+
+    # Apelează modulul de export
+    return export_movie_list_to_csv(to_watch_movies, filename="parallax_to_watch_list.csv")
 
 # --- Rută nouă: Export date CSV ---
 
@@ -292,3 +309,38 @@ def export_seen_list():
 
     # Apelează modulul de export
     return export_movie_list_to_csv(seen_movies, filename="parallax_seen_list.csv")
+
+
+# --- Rută nouă: Căutare Filme ---
+
+@app.route("/search", methods=['GET'])
+def search():
+    """
+    Gestionează cererile de căutare, interogând baza de date 
+    pentru filme după titlu sau descriere.
+    """
+    # Preluare termen de căutare din URL (ex: /search?query=inception)
+    query = request.args.get('query', '') 
+    
+    results = []
+    
+    if query:
+        # Creează termenul de căutare pentru operatorul LIKE (e.g., "%interstellar%")
+        search_term = f"%{query}%"
+        
+        # Interogarea SQLAlchemy: Caută după titlu SAU descriere (case-insensitive)
+        results = Movie.query.filter(
+            (Movie.title.ilike(search_term)) | 
+            (Movie.description.ilike(search_term))
+        ).all()
+        
+        # Număr de rezultate
+        count = len(results)
+    else:
+        count = 0
+
+    return render_template('search_results.html', 
+                           title=f"Rezultate Căutare: {query}",
+                           query=query,
+                           results=results,
+                           count=count)
