@@ -305,28 +305,33 @@ def rate_movie(movie_id):
         flash('Please provide a valid rating between 1 and 10.', 'danger')
         return redirect(url_for('movie_details', movie_id=movie_id))
     
-    # Verify if there is already a rating by the user for this movie
+    # Verifică dacă rating-ul există deja
     rating = Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
+    movie = Movie.query.get_or_404(movie_id) # Preluăm filmul pentru mesaje
 
     if rating:
-        # Update existing rating
+        # Actualizează rating-ul existent
         rating.score = score
-
-        # Commit the changes to the database
-        database.session.commit()
-
-        # Inform the user of the update
-        flash(f'Updated your rating for "{rating.movie.title}" to {score}.', 'success')
+        flash(f'Updated your rating for "{movie.title}" to {score}.', 'success')
     else:
-        # Create a new rating
+        # Creează un rating nou
         new_rating = Rating(user_id=current_user.id, movie_id=movie_id, score=score)
         database.session.add(new_rating)
-
-        # Commit the new rating to the database
-        database.session.commit()
-
-        # Inform the user of the new rating
-        flash(f'You rated "{new_rating.movie.title}" with a score of {score}.', 'success')
+        flash(f'You rated "{movie.title}" with a score of {score}.', 'success')
+        
+    # --- LOGICA CRITICĂ: Asigură-te că filmul este marcat ca văzut ---
+    seen_entry = SeenList.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
+    
+    if not seen_entry:
+        # Adaugă filmul în SeenList, deoarece a primit un rating
+        new_seen_entry = SeenList(user_id=current_user.id, movie_id=movie_id)
+        database.session.add(new_seen_entry)
+        
+        # Opțional: șterge-l din ToWatchList dacă a fost adăugat
+        ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
+        
+    # Commit final al tuturor schimbărilor (rating, seenlist, towatchlist)
+    database.session.commit()
 
     # Redirect back to the movie details page
     return redirect(url_for('movie_details', movie_id=movie_id))
@@ -505,3 +510,43 @@ def settings():
                            title='Setări Cont',
                            profile_form=profile_form,
                            password_form=password_form)
+
+@app.route("/watchlist")
+@login_required
+def watchlist():
+    # Preia toate intrările din ToWatchList pentru utilizatorul curent
+    watchlist_items = ToWatchList.query.filter_by(user_id=current_user.id).all()
+    
+    # Extrage obiectele Movie asociate
+    movies = [item.movie for item in watchlist_items]
+    
+    # Sortare (opțional, poți adăuga sortare/paginare complexă aici)
+    # Deocamdată, le afișăm în ordinea în care au fost adăugate (sau după ID-ul filmului)
+    
+    return render_template('watchlist.html', 
+                           title='Lista Mea de Vizionare', 
+                           movies=movies)
+
+## --- Rută: Filme Văzute și Rating-uri ---
+
+@app.route("/seen_list")
+@login_required
+def seen_list():
+    # Preia toate rating-urile oferite de utilizatorul curent
+    # Folosim .all() pentru a obține toate obiectele Rating
+    ratings = Rating.query.filter_by(user_id=current_user.id).order_by(Rating.timestamp.desc()).all()
+    
+    # ratings_data va conține (obiectul Movie, rating-ul dat)
+    seen_movies_data = []
+    for rating in ratings:
+        # Asumăm că modelul Rating are o relație 'movie' care returnează obiectul Movie
+        if rating.movie:
+            seen_movies_data.append({
+                'movie': rating.movie,
+                'score': rating.score,
+                'rating_id': rating.id
+            })
+
+    return render_template('seen_list.html', 
+                           title='Filme Văzute și Evaluările Mele', 
+                           seen_movies=seen_movies_data)
