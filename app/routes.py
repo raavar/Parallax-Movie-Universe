@@ -263,7 +263,7 @@ def user_profile(user_id):
     user = User.query.get_or_404(user_id)
     
     # Generare QR Code (folosind contextul aplicației)
-    qr_data_uri = generate_user_qr_code(app.app_context(), user_id)
+    qr_data_uri = generate_user_qr_code(user_id)
     
     # Preluare liste de filme (pentru afișare)
     seen_movies = SeenList.query.filter_by(user_id=user_id).all()

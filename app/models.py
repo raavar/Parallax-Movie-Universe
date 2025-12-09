@@ -62,6 +62,8 @@ class SeenList(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
+    # Adaugă relația explicită pentru a permite accesul item.movie
+    movie = database.relationship('Movie', backref='seen_by_users', lazy=True)
     date_added = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
     # Make sure that an user can add a movie to seen list only once
@@ -73,6 +75,8 @@ class ToWatchList(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
+    # Adaugă relația explicită pentru a permite accesul item.movie
+    movie = database.relationship('Movie', backref='towatch_by_users', lazy=True)
     date_added = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
     # Make sure that an user can add a movie to to-watch list only once
