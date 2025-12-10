@@ -108,7 +108,7 @@
 
                         <p class="description">{{ movie.description[:80] }}{% if movie.description|length > 80 %}...{% endif %}</p>
                         
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-secondary w-100 mt-auto">Detalii</a>
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-details-3d">Details</a>
                     </div>
                 </div>
             {% endfor %}

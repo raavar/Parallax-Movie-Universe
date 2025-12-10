@@ -533,6 +533,8 @@ h2, h3 {
     color: #f7cdd0 !important; /* Alb */
     text-decoration: none;
     transition: color 0.2s ease;
+    align-items: center;
+    text-align: center;
 }
 
 .movie-card-content h3 a:hover {
@@ -944,4 +946,87 @@ h2, h3 {
     background-color: #222; /* Fundalul rămâne la culoarea dezactivată */
     border-color: #333;
     color: #666;
+}
+
+/* 1. Stilul de bază al butonului */
+.btn-details-3d {
+    /* Setări de bază */
+    padding: 12px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    display: block; 
+    text-align: center;
+
+    /* Colțuri rotunjite (CERC) */
+    border-radius: 50px !important;
+    
+    /* Culori și fundal */
+    background-color: #333333; 
+    color: #f0f0f0;
+    border: none;
+}
+
+.btn-details-3d:hover {
+    background-color: #DC3551; 
+    color: white;
+    box-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.5),     
+        -2px -2px 4px rgba(64, 64, 64, 0.4); 
+    transform: scale(0.98); 
+}
+
+/* 3. Ajustări pentru a centra butonul în card */
+/* Vom folosi o margine orizontală automată pentru a-l centra */
+.movie-card-content {
+    padding: 15px;
+    
+    display: flex; /* Activează Flexbox */
+    flex-direction: column; 
+    
+    align-items: center; /* CRITIC: Centrează toate elementele pe orizontală (inclusiv butonul) */
+    text-align: center; /* Centrează textul în interiorul elementelor */
+    
+    flex-grow: 1;
+}
+
+/* Stil pentru Titlu (Asigură că se aliniază la centru) */
+.movie-card h3 {
+    text-align: center; /* Asigură că titlul în sine este centrat */
+    /* ... (alte stiluri H3 rămân la fel) ... */
+}
+
+/* Stil pentru rândul de Genuri (Pentru a le centra ca bloc) */
+.genres-row { 
+    margin-bottom: 10px; 
+    display: flex;
+    justify-content: center; /* Centrează tag-urile de genuri */
+    flex-wrap: wrap; 
+}
+
+/* Stil pentru Descriere */
+.description {
+    text-align: center;
+    /* ... (alte stiluri description rămân la fel) ... */
+}
+
+.movie-card .btn-details-3d {
+    margin-top: 15px;
+    margin-bottom: 5px; 
+    
+    /* Setăm o lățime vizuală (poți ajusta asta) */
+    width: 70%; 
+    
+    /* Deoarece părintele are align-items: center, margin: auto nu mai este necesar.
+       Dar îl lăsăm pentru a preveni alte conflicte. */
+    margin-left: auto;
+    margin-right: auto;
+    
+    display: block; 
+    border-radius: 50px !important;
+    
+    /* Reaplică umbrele 3D */
+    box-shadow: 
+        6px 6px 12px rgba(0, 0, 0, 0.5);
 }
