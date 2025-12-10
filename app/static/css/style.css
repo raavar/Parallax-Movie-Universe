@@ -288,7 +288,20 @@ body {
     margin: 0 auto;
 }
 
-h1, h2, h3 {
+h1 {
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 4.5rem; 
+    color: #DC3551; 
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    border-bottom: none; /* Scoate linia default */
+    text-align: center;
+}
+
+h2, h3 {
     color: #f0f0f0;
     border-bottom: 1px solid #333;
     padding-bottom: 5px;
@@ -727,6 +740,95 @@ h1, h2, h3 {
     background-color: #f7cdd0;   
     opacity: 0.5;             
 }
+
+
+.filter-heading {
+    font-size: 1.2rem;
+    color: #DC3551;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    display: block;
+    border-bottom: 1px solid #333; 
+    padding-bottom: 5px;
+    text-align: center; /* Titlurile secțiunilor centrate */
+}
+
+/* Genuri (Butoane) */
+.genre-tags-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.btn-clear-accent {
+    /* Stil implicit: Chenar roșu, fundal transparent */
+    background-color: transparent !important;
+    border: 1px solid #DC3551 !important;
+    color: #DC3551 !important;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-accent:hover {
+    /* Stil la hover: Fundal roșu complet */
+    background-color: #DC3551 !important;
+    color: white !important;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-1px); /* Mic efect de ridicare */
+}
+
+.btn-tag {
+    background-color: #1f1f1f; 
+    color: #ccc;
+    border: 1px solid #333;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-tag:hover {
+    background-color: #DC3551;
+    color: white;
+    border-color: #DC3551;
+    transform: translateY(-2px);
+}
+
+.btn-tag-selected {
+    background-color: #DC3551;
+    border-color: #DC3551;
+    color: white;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+}
+
+/* Zona Controalelor (Year & Sort) */
+.controls-wrapper {
+    background-color: #1a1a1a; 
+    padding: 15px 30px;
+    border-radius: 15px;
+    border: 1px solid #2a2a2a;
+    width: 100%;
+    max-width: 900px;
+}
+
+/* Butonul Apply */
+.btn-apply {
+    background-color: #DC3551;
+    border: none;
+    font-weight: bold;
+}
+.btn-apply:hover {
+    background-color: #b02a40;
+}
+
+
+/* Catalog Pagination */
 
 .custom-pagination {
     list-style: none; 

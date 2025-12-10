@@ -24,7 +24,7 @@
                         {% endfor %}
                         
                         {% set clear_genre_args = {'sort_by': current_sort, 'min_year': min_year, 'max_year': max_year} %}
-                        <a href="{{ url_for('catalog', **clear_genre_args) }}" class="btn btn-tag btn-sm btn-clear-filter">Șterge Genuri</a>
+                        <a href="{{ url_for('catalog', **clear_genre_args) }}" class="btn btn-tag btn-sm btn-clear-accent">Șterge Genuri</a>
                     </div>
                 </div>
 
