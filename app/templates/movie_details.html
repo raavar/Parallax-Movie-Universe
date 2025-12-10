@@ -12,58 +12,101 @@
             <p>Rating Mediu Global: <strong>{{ "%.1f" | format(avg_rating) }} / 10</strong></p>
         {% endif %}
 
-        {% if movie.poster_url %}
-            <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="img-fluid rounded shadow poster-image">
-        {% else %}
-            {# Fallback image if no poster found #}
-            <div class="placeholder-poster p-5 bg-secondary text-white rounded">
-                <i></i>
-                <p>No Image</p>
-            </div>
-        {% endif %}
-
         {% if movie.imdb_rating %}
             <div class="badge text-dark" style="background-color: #d0a817; font-size: 1.1em; padding: 8px 12px;">
                 <strong>Critic rating</strong> {{ movie.imdb_rating }}
             </div>
         {% endif %}
-    </article>
         
-        {% if current_user.is_authenticated %}
-            <hr>
-            <h2>Acțiunile Tale</h2>
-            
-            <div class="user-actions">
-                {# ACȚIUNE 1: Liste #}
-                <form method="POST" action="{{ url_for('add_to_seen', movie_id=movie.id) }}" style="display:inline;">
-                    <button type="submit" class="btn btn-primary">Adaugă la Văzute</button>
-                </form>
-                <form method="POST" action="{{ url_for('add_to_watch', movie_id=movie.id) }}" style="display:inline;">
-                    <button type="submit" class="btn btn-secondary">Adaugă la De Văzut</button>
-                </form>
-
-                {# ACȚIUNE 2: Rating #}
-                <div class="rating-form">
-                    <h3>Evaluează Filmul</h3>
-                    <form method="POST" action="{{ url_for('rate_movie', movie_id=movie.id) }}">
-                        <label for="score">Rating-ul tău: (1-10)</label>
-                        <select name="score" id="score" required>
-                            {% for i in range(1, 11) %}
-                                <option value="{{ i }}" 
-                                    {% if user_rating and user_rating.score == i %}selected{% endif %}>
-                                    {{ i }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn btn-success">
-                            {{ 'Actualizează' if user_rating else 'Trimite' }} Rating
-                        </button>
-                    </form>
-                    {% if user_rating %}
-                        <p class="current-rating">Rating-ul tău curent: {{ user_rating.score }}</p>
-                    {% endif %}
-                </div>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="img-fluid rounded shadow poster-image">
+                {% else %}
+                    {# Fallback image if no poster found #}
+                    <div class="placeholder-poster p-5 bg-secondary text-white rounded text-center">
+                        <i class="fas fa-image fa-3x"></i>
+                        <p class="mt-2">No Image</p>
+                    </div>
+                {% endif %}
             </div>
-        {% endif %}
+            
+            <div class="col-md-8">
+                {% if current_user.is_authenticated %}
+                    <h2 class="mt-0">Acțiunile Tale</h2>
+                    
+                    <div class="user-actions-panel d-flex flex-column align-items-start">
+                        
+                        {# 1. BUTON WATCHLIST (Yellow/Accent) - Nu necesită modificări #}
+                        <form method="POST" action="{{ url_for('toggle_watchlist', movie_id=movie.id) }}" class="mb-3 w-100">
+                            <button type="submit" 
+                                    class="btn btn-lg w-100 text-dark {% if is_in_watchlist %}btn-warning-checked{% else %}btn-warning{% endif %}">
+                                <div class="d-flex justify-content-between align-items-center px-2">
+                                    <span>
+                                        {% if is_in_watchlist %}
+                                            <i class="fas fa-check"></i> În Watchlist
+                                        {% else %}
+                                            <i class="fas fa-plus"></i> Adaugă în Watchlist
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </button>
+                        </form>
+
+                        {# 2. BUTON FILME VĂZUTE (Toggle) - Folosim ruta toggle_seen #}
+                        <form method="POST" action="{{ url_for('toggle_seen', movie_id=movie.id) }}" class="w-100 mb-3">
+                            <button type="submit" 
+                                    class="btn btn-lg w-100 {% if is_seen %}btn-info{% else %}btn-outline-secondary{% endif %}">
+                                <i class="fas fa-eye"></i> 
+                                {% if is_seen %}
+                                    Scoatere de la Văzute
+                                {% else %}
+                                    Marcare ca Văzut
+                                {% endif %}
+                            </button>
+                        </form>
+                        {# NU MAI E NEVOIE de codul vechi cu if/else pentru is_seen #}
+
+                    </div>
+                    
+                    {# 3. SECȚIUNE RATING (Vizibilă permanent) - Scoatem if is_seen #}
+                    <div id="ratingSection" class="mt-4 p-3 border rounded w-100">
+                         <h3>Evaluează Filmul</h3>
+                         
+                         {% if not is_seen %}
+                             <p class="alert alert-warning small">
+                                Evaluarea filmului îl va marca automat ca **Văzut** și, dacă este cazul, îl va scoate din Watchlist.
+                             </p>
+                         {% endif %}
+                         
+                        <form method="POST" action="{{ url_for('rate_movie', movie_id=movie.id) }}">
+                            <label for="score">Rating-ul tău: (1-10)</label>
+                            <select name="score" id="score" class="form-select mb-2" required>
+                                {% for i in range(1, 11) %}
+                                    <option value="{{ i }}" 
+                                        {% if user_rating and user_rating == i %}selected{% endif %}>
+                                        {{ i }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-success w-100">
+                                {{ 'Actualizează' if user_rating else 'Trimite Rating' }} 
+                            </button>
+                        </form>
+                        
+                        {% if user_rating %}
+                            <p class="current-rating mt-2">Evaluarea ta curentă: {{ user_rating }}/10</p>
+                        {% elif is_seen %}
+                            <p class="current-rating mt-2 text-muted">Marchezi filmul ca văzut, dar nu ai oferit rating.</p>
+                        {% endif %}
+                    </div>
+
+                {% else %}
+                    <p class="alert alert-warning">Vă rugăm să vă autentificați pentru a adăuga filme în liste și pentru a oferi rating-uri.</p>
+                {% endif %}
+            </div>
+            
+        </div>
+        
     </article>
 {% endblock %}
