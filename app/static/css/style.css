@@ -1,14 +1,16 @@
 /* Fișier: app/static/css/style.css */
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Montserrat", sans-serif;
     margin: 0;
     padding: 0;
     background-color: #121212;
     color: #f0f0f0;
 }
 
-/* Navigare și Antet */
+/* ======================================================= */
+/* NAVIGARE */
+/* ======================================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -16,13 +18,27 @@ body {
     background-color: #1f1f1f;
     padding: 10px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    position: relative; /* Important pentru z-index */
+    z-index: 1000;
+}
+
+.navbar-logo-img {
+    height: 40px; 
+    width: auto;  
+    object-fit: contain;
+    margin-right: 15px; /* Spațiu între logo și text */
 }
 
 .logo {
-    font-size: 1.5em;
+    display: flex;
+    align-items: center;
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 1.8em; 
+    letter-spacing: 1px;
     font-weight: bold;
-    color: #4CAF50; /* Culoarea primară */
+    color: #DC3551; 
     text-decoration: none;
+    flex: 1;
 }
 
 /* Containerul de link-uri din navbar (dreapta) */
@@ -32,110 +48,213 @@ body {
     gap: 10px; /* Spațiu între elemente */
 }
 
-.nav-links a {
+/* Stilul general pentru link-uri simple (Login/Register) */
+.nav-links a:not(.nav-btn):not(.dropdown-item) {
     color: #f0f0f0;
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 4px;
     transition: background-color 0.3s;
 }
-
-.nav-links a:hover {
+.nav-links a:not(.nav-btn):not(.dropdown-item):hover {
     background-color: #333;
 }
 
 /* ======================================================= */
-/* NAVIGARE (Stiluri pentru Dropdown și Watchlist Button) */
+/* BARA DE CĂUTARE MODERNĂ & AUTOCOMPLETE */
 /* ======================================================= */
 
-/* Stil pentru Butonul Watchlist separat */
-.watchlist-main-button {
-    background-color: #ffd700; 
-    color: #1a1a1a !important; 
-    font-weight: bold;
-    padding: 8px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: background-color 0.2s;
+/* Containerul principal pentru poziționare */
+.search-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    border: none;
-}
-.watchlist-main-button i {
-    margin-right: 5px;
-}
-.watchlist-main-button:hover {
-    background-color: #e6c200;
+    margin-right: 20px; /* Spațiu față de butoanele din dreapta */
+    z-index: 1001; /* Peste meniu */
 }
 
-/* Stil pentru Dropdown-ul de Profil */
+/* Capsula de căutare (Formularul) */
+.search-box {
+    display: flex;
+    align-items: center;
+    background-color: #2a2a2a; /* Fundal gri închis */
+    border: 1px solid #444;    /* Bordură subtilă */
+    border-radius: 50px;       /* Formă rotundă */
+    padding: 5px 15px;         /* Spațiu interior */
+    width: 500px;              /* Lățime fixă */
+    transition: all 0.3s ease;
+}
+
+/* Efect când utilizatorul scrie (Focus) */
+.search-box:focus-within {
+    border-color: #DC3551; /* Se face ROȘU la activare */
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.3); /* Strălucire roșie */
+    background-color: #333;
+}
+
+/* Câmpul de text */
+.search-input {
+    background: transparent;
+    border: none;
+    color: #f0f0f0;
+    width: 100%;
+    outline: none; /* Scoate conturul default albastru */
+    font-size: 0.95em;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Placeholder-ul (textul "Caută filme...") */
+.search-input::placeholder {
+    color: #888;
+}
+
+/* Butonul cu Lupă */
+.search-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0 0 0 10px; /* Spațiu mic la stânga */
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.search-btn:hover {
+    color: #DC3551; /* Lupa se face roșie la hover */
+    transform: scale(1.1); /* Mic efect de mărire */
+}
+
+/* LISTA DE REZULTATE (Sugestii) */
+.autocomplete-results {
+    position: absolute;
+    top: 115%; /* Imediat sub bara de căutare */
+    left: 0;
+    width: 100%; /* Aceeași lățime ca bara */
+    background-color: #1f1f1f;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    z-index: 9999; /* Să fie peste tot */
+    display: none; /* Ascuns implicit */
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Stiluri pentru lista din interior */
+.autocomplete-results ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.autocomplete-results li a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #ccc;
+    border-bottom: 1px solid #333;
+    transition: background-color 0.2s;
+}
+
+.autocomplete-results li a:hover {
+    background-color: #DC3551;
+    color: white;
+}
+
+/* ======================================================= */
+/* BUTOANE NAVBAR (Catalog & Watchlist) */
+/* ======================================================= */
+
+/* Stilul comun de bază */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+    padding: 6px 16px;
+    margin-right: 10px;
+    background-color: transparent; 
+    border: 1px solid #666;        
+    color: #ccc;                   
+    border-radius: 50px;           
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95em;
+    transition: all 0.3s ease;     
+}
+
+/* Butonul CATALOG (ROȘU la hover) */
+.nav-btn.btn-catalog:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Butonul WATCHLIST (GALBEN la hover) */
+.nav-btn.btn-watchlist:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
+/* DROPDOWN PROFIL */
 .user-dropdown {
-    position: relative;
-    margin-left: 15px; /* Spațiu față de butonul Watchlist */
+    position: relative; 
 }
 
 .dropdown-toggle {
-    /* Flexbox pentru aliniere perfectă orizontală */
     display: flex;
     align-items: center; 
     justify-content: center;
-
-    /* Stilul vizual */
-    background-color: #2a2a2a; /* Fundal gri închis, nu transparent */
-    border: 1px solid #444;    /* Bordură fină */
-    color: #f0f0f0;
+    gap: 8px; 
+    background-color: transparent; 
+    border: 1px solid #666;    
+    color: #ccc;
     cursor: pointer;
-    
-    /* Dimensiuni și Rotunjime */
-    padding: 6px 15px; 
-    border-radius: 50px; /* Aceasta creează forma de "pilulă" */
-    font-size: 1em;
-    
-    /* Tranziție fină la hover */
-    transition: all 0.2s ease;
+    padding: 6px 16px; 
+    border-radius: 50px; 
+    font-size: 0.95em;
+    font-weight: bold;
+    transition: all 0.3s ease;
 }
 
+/* Profil (ALBASTRU la hover) */
 .dropdown-toggle:hover {
-    background-color: #3a3a3a;
-    border-color: #666;
+    background-color: #DC3551; /* Sau #007bff pt albastru */
+    border-color: #DC3551;
+    color: #f7cdd0;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
 }
 
-/* Stil Iconiță Profil */
 .profile-icon {
     font-size: 1.3em;
-    margin-right: 8px; /* Spațiu între iconiță și nume */
-    color: #ccc;
+    color: inherit;
 }
 
-/* Stil Nume */
-.dropdown-toggle span {
-    font-weight: 600;
-    margin-right: 8px; /* Spațiu între nume și săgeată */
-}
-
-/* Stil Săgeată */
 .arrow-icon {
     font-size: 0.8em;
     color: #999;
+    margin-left: 5px;
 }
 
-/* Textul cu Numele */
-.username-text {
-    font-weight: bold;
-    margin-right: 8px;
-    font-size: 0.95em;
-}
-
+/* Meniul Dropdown */
 .dropdown-menu {
     display: none;
     position: absolute;
-    top: 110%; 
+    top: 120%; /* Puțin mai jos */
     right: 0;
     min-width: 220px;
     background-color: #1f1f1f; 
     border: 1px solid #333;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 2000;
     padding: 10px 0;
     border-radius: 8px;
 }
@@ -160,7 +279,9 @@ body {
     background-color: #444;
 }
 
-/* Conținut Principal */
+/* ======================================================= */
+/* STILURI GENERALE & UTILITIES */
+/* ======================================================= */
 .container {
     padding: 20px;
     max-width: 1200px;
@@ -180,28 +301,12 @@ h1, h2, h3 {
     border-radius: 4px;
     font-weight: bold;
 }
+.alert-success { background-color: #4CAF50; color: white; }
+.alert-danger { background-color: #f44336; color: white; }
+.alert-warning { background-color: #ff9800; color: #333; }
+.alert-info { background-color: #2196F3; color: white; }
 
-.alert-success {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.alert-danger {
-    background-color: #f44336;
-    color: white;
-}
-
-.alert-warning {
-    background-color: #ff9800;
-    color: #333;
-}
-
-.alert-info {
-    background-color: #2196F3;
-    color: white;
-}
-
-/* Butoane și Formulare */
+/* Butoane Standard */
 .btn {
     padding: 8px 15px;
     border: none;
@@ -210,30 +315,13 @@ h1, h2, h3 {
     font-weight: bold;
     margin-right: 10px;
 }
+.btn-primary { background-color: #4CAF50; color: white; }
+.btn-secondary { background-color: #555; color: white; }
+.btn-success { background-color: #007bff; color: white; }
 
-.btn-primary {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.btn-secondary {
-    background-color: #555;
-    color: white;
-}
-
-.btn-success {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-download {
-    background-color: #ffcc00;
-    color: #333;
-    text-decoration: none;
-    display: inline-block;
-}
-
-/* Grid Filme */
+/* ======================================================= */
+/* GRID CATALOG (Carduri Verticale) */
+/* ======================================================= */
 .movie-list-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -241,48 +329,39 @@ h1, h2, h3 {
     margin-top: 20px;
 }
 
-/* --- Stiluri Noi pentru Cardurile din Catalog --- */
-
-/* Ajustăm cardul să fie Flexbox vertical pentru a alinia butonul jos */
 .movie-card {
     background-color: #1f1f1f;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-    overflow: hidden; /* Asigură că imaginea nu iese din colțurile rotunjite */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    padding: 0; /* Scoatem padding-ul general pentru ca poza să fie lipită de margini */
+    padding: 0;
     transition: transform 0.2s;
-    height: 100%; /* Face cardurile să aibă înălțime egală în grid */
+    height: 100%;
 }
 
 .movie-card:hover {
-    transform: translateY(-5px); /* Efect de ridicare la hover */
+    transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
 }
 
-/* Containerul pentru poster */
 .movie-poster-wrapper {
     width: 100%;
-    height: 350px; /* Înălțime fixă pentru uniformitate */
+    height: 350px;
     background-color: #000;
     overflow: hidden;
     display: block;
 }
 
-/* Imaginea propriu-zisă */
 .card-poster {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Taie imaginea ca să umple spațiul fără să o deformeze */
+    object-fit: cover;
     transition: opacity 0.3s;
 }
+.card-poster:hover { opacity: 0.9; }
 
-.card-poster:hover {
-    opacity: 0.9;
-}
-
-/* Placeholder pentru lipsă imagine */
 .card-poster-placeholder {
     width: 100%;
     height: 100%;
@@ -294,12 +373,11 @@ h1, h2, h3 {
     font-size: 3em;
 }
 
-/* Zona de text */
 .movie-card-content {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Umple restul spațiului */
+    flex-grow: 1;
 }
 
 .movie-card h3 {
@@ -316,139 +394,248 @@ h1, h2, h3 {
     font-weight: normal;
 }
 
-.genres-row {
-    margin-bottom: 10px;
-}
+.genres-row { margin-bottom: 10px; }
 
 .description {
     font-size: 0.9em;
     color: #ccc;
     margin-bottom: 15px;
-    flex-grow: 1; /* Împinge butonul jos */
+    flex-grow: 1;
 }
 
-/* Ajustare buton detalii */
-.movie-card .btn {
-    margin-right: 0; /* Resetare margine */
-}
+/* ======================================================= */
+/* HOMEPAGE (CARUSEL & TITLU) */
+/* ======================================================= */
 
-/* QR Code */
-.qr-code {
-    max-width: 150px;
-    height: auto;
-    background-color: white;
-    padding: 5px;
-    border-radius: 4px;
-}
+/* 1. Titlul PARALLAX Centrat */
+.parallax-title {
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 10rem; 
+    font-weight: 400; 
+    letter-spacing: 5px;
+    color: #DC3551;
+    text-transform: uppercase;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.8);
 
-/* Stiluri specifice pentru Formularele de Autentificare */
-.form-container {
-    max-width: 400px;
-    margin: 40px auto;
-    padding: 25px;
-    background-color: #1f1f1f;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+    margin-bottom: 10px;
+    border-bottom: none; 
+    display: inline-block; 
+    padding: 20px 40px; 
+    background-color: #1a1a1a; 
+    border-radius: 10px; 
+    border: 1px solid #333; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5); 
+
+    margin-bottom: 30px; 
     text-align: center;
 }
 
-.auth-form {
-    text-align: left;
+/* 2. Containerul Caruselului */
+.carousel-container {
+    position: relative; 
+    padding: 0 50px; 
 }
 
-.form-group {
-    margin-bottom: 20px;
+/* 3. Scroll Container (Scrollbar ascuns) */
+.horizontal-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 20px 0;
+    scroll-behavior: smooth;
+    
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+.horizontal-scroll-container::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+/* 4. Carduri Orizontale */
+.movie-card-horizontal {
+    flex: 0 0 auto;
+    width: 200px;
+    transition: transform 0.3s ease;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
-.form-group label {
+.movie-card-horizontal:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.7);
+}
+
+.horizontal-poster-wrapper {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="password"] {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #333;
-    border-radius: 4px;
-    background-color: #2a2a2a;
-    color: #f0f0f0;
-    box-sizing: border-box; /* Include padding-ul în lățime */
+    height: 300px;
+    background-color: #000;
 }
-
-.checkbox-group label {
-    display: inline;
-    font-weight: normal;
-    margin-left: 5px;
-}
-
-.btn-full-width {
+.horizontal-poster-wrapper img {
     width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    font-size: 1.1em;
+    height: 100%;
+    object-fit: cover;
 }
 
-.auth-footer {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #333;
-}
-
-.auth-footer a {
-    color: #4CAF50;
-    text-decoration: none;
-}
-
-/* Containerul de căutare pentru poziționare relativă */
-.search-container {
-    position: relative;
-    display: inline-block;
-}
-
-/* Containerul de rezultate (lista derulantă) */
-.autocomplete-results {
-    position: absolute;
-    z-index: 999;
-    top: 100%;
-    left: 0;
+.horizontal-placeholder {
     width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #333;
-    border: 1px solid #555;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    display: none;
-    border-top: none;
-    padding: 0;
-    margin: 0;
-
-    /* SETĂRI PENTRU DERULARE */
-    max-height: 250px;
-    overflow-y: auto; 
-    overflow-x: hidden; 
+    color: #555;
+    font-size: 2em;
 }
 
-.autocomplete-results ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.horizontal-card-body {
+    padding: 10px;
+    text-align: center; /* Text centrat */
 }
 
-.autocomplete-results li a {
-    display: block;
-    padding: 10px 10px;
+.horizontal-card-body h6 {
+    margin: 5px 0;
+    font-size: 1em;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
+
+/* 1. Pentru Caruselul de pe Homepage (Orizontal) */
+.horizontal-card-body h6 a {
+    color: #f7cdd0 !important; /* Alb (text normal) */
+    text-decoration: none;     /* Fără subliniere */
+    transition: color 0.2s ease;
+}
+
+.horizontal-card-body h6 a:hover {
+    color: #DC3551 !important; /* Roșu la hover */
     text-decoration: none;
-    color: #ccc;
-    cursor: pointer;
 }
 
-.autocomplete-results li a:hover {
-    background-color: #555;
+/* 2. Pentru Catalog (Grid-ul vertical) */
+.movie-card-content h3 a {
+    color: #f7cdd0 !important; /* Alb */
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.movie-card-content h3 a:hover {
+    color: #DC3551 !important; /* Roșu la hover */
+}
+
+/* 5. Butoanele Săgeți */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.6);
     color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5em;
+    cursor: pointer;
+    z-index: 20;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carousel-btn:hover {
+    color: black;
+    background-color: #f7cdd0;
+    transform: translateY(-50%) scale(1.1);
+}
+.btn-left { left: 0; }
+.btn-right { right: 0; }
+
+/* ======================================================= */
+/* BUTON HOMEPAGE CENTRAT (Explorează Catalog) */
+/* ======================================================= */
+
+.centered-action-container {
+    display: flex !important;
+    justify-content: center !important; 
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 40px;
+    margin-bottom: 60px;
+    padding-top: 20px;
 }
 
-/* Stiluri Filtre (Catalog) */
+.home-explore-btn {
+    background-color: #DC3551 !important; 
+    border: none !important;
+    font-size: 1.5rem !important;
+    padding: 15px 50px !important;
+    border-radius: 50px !important;
+    color: #f7cdd0 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+
+.home-explore-btn:hover {
+    transform: scale(1.1) !important; 
+    background-color: #DC3551 !important; 
+    box-shadow: 0 15px 30px rgba(220, 53, 81, 0.5) !important; 
+}
+
+
+/* ======================================================= */
+/* DETALII FILM (Butoane Acțiune) */
+/* ======================================================= */
+.user-actions-panel { width: 100%; }
+.w-100 { width: 100% !important; }
+
+/* Buton Watchlist */
+.btn-warning {
+    background-color: #ffd700; 
+    border-color: #ffd700;
+    color: #1a1a1a;
+    font-weight: bold;
+    border-radius: 8px;
+}
+.btn-warning:hover {
+    background-color: #e6c200; 
+    border-color: #e6c200;
+    color: #1a1a1a;
+}
+.btn-warning-checked {
+    background-color: #ffd700; 
+    border-color: #ffd700;
+    color: #1a1a1a;
+}
+.btn-warning-checked:hover { background-color: #ffc400; }
+
+/* Buton Văzut */
+.btn-info {
+    background-color: #333; 
+    color: #7ab8ff; 
+    border: 1px solid #7ab8ff;
+    font-weight: bold;
+    border-radius: 8px;
+}
+.btn-info:hover { background-color: #444; }
+
+.btn-outline-secondary {
+    border: 1px solid #999;
+    color: #ccc;
+    background-color: transparent;
+    border-radius: 8px;
+}
+.btn-outline-secondary:hover { background-color: #333; color: white; }
+
+#ratingSection {
+    background-color: #2a2a2a;
+    border: 1px solid #444 !important;
+}
+
+/* FILTRE (Catalog) */
 .filter-heading {
     color: #ffd700;
     font-size: 1.1em;
@@ -468,17 +655,8 @@ h1, h2, h3 {
     font-size: 0.9em;
     transition: background-color 0.2s, color 0.2s;
 }
-
-/* Stil pentru tag-ul neselectat */
-.btn-tag-default {
-    background-color: #333;
-    color: #ccc;
-}
-.btn-tag-default:hover {
-    background-color: #555;
-}
-
-/* Stil pentru tag-ul SELECTAT */
+.btn-tag-default { background-color: #333; color: #ccc; }
+.btn-tag-default:hover { background-color: #555; }
 .btn-tag-selected {
     background-color: #ffd700;
     color: #1a1a1a;
@@ -496,81 +674,56 @@ h1, h2, h3 {
     border: 1px solid #555;
 }
 
-.poster-image {
-    max-height: 500px;
-    width: auto;
-    border: 4px solid #333;
-    transition: transform 0.3s;
+/* Auth Forms */
+.form-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 25px;
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    text-align: center;
 }
-
-.poster-image:hover {
-    transform: scale(1.02);
-}
-
-/* ======================================================= */
-/* PAGINA DETALII FILM (Butoane de Acțiune Toggle) */
-/* ======================================================= */
-
-.user-actions-panel {
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input {
     width: 100%;
-}
-
-/* Stil de bază pentru butoanele de acțiune */
-.w-100 { 
-    width: 100% !important; 
-}
-
-/* Stil pentru Butonul WATCHLIST */
-.btn-warning {
-    background-color: #ffd700; 
-    border-color: #ffd700;
-    color: #1a1a1a;
-    font-weight: bold;
-    border-radius: 8px;
-}
-.btn-warning:hover {
-    background-color: #e6c200; 
-    border-color: #e6c200;
-    color: #1a1a1a;
-}
-
-/* Stil Watchlist Când ESTE în listă (Checked / In Watchlist) */
-.btn-warning-checked {
-    background-color: #ffd700; 
-    border-color: #ffd700;
-    color: #1a1a1a;
-}
-.btn-warning-checked:hover {
-    background-color: #ffc400; 
-}
-
-
-/* Stil VĂZUT (Când este marcat) - Folosește btn-info */
-.btn-info {
-    background-color: #333; 
-    color: #7ab8ff; 
-    border: 1px solid #7ab8ff;
-    font-weight: bold;
-    border-radius: 8px;
-}
-.btn-info:hover {
-    background-color: #444;
-}
-
-/* Stil pentru Marcare ca Văzut (când NU e văzut) */
-.btn-outline-secondary {
-    border: 1px solid #999;
-    color: #ccc;
-    background-color: transparent;
-    border-radius: 8px;
-}
-.btn-outline-secondary:hover {
-    background-color: #333;
-    color: white;
-}
-
-/* Stil pentru secțiunea de rating permanentă */
-#ratingSection {
+    padding: 10px;
     background-color: #2a2a2a;
-    border: 1px solid #444 !important;
+    border: 1px solid #333;
+    color: #f0f0f0;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.btn-full-width { width: 100%; margin-top: 10px; padding: 12px; font-size: 1.1em; }
+.auth-footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; }
+.auth-footer a { color: #4CAF50; }
+
+/* --- Titlu Centrat între Linii (Homepage) --- */
+.recommendation-heading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0; 
+}
+
+.recommendation-heading {
+    font-size: 2rem;          
+    font-weight: 700;         
+    color: #f7cdd0;           
+    padding: 0 20px;          
+    text-transform: none;     
+    margin: 0;                
+    white-space: nowrap;
+    text-decoration: none !important;
+    border-bottom: none !important;   
+}
+
+.recommendation-heading-container::before,
+.recommendation-heading-container::after {
+    content: "";
+    flex-grow: 1;             
+    height: 1px;              
+    background-color: #f7cdd0;   
+    opacity: 0.5;             
 }

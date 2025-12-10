@@ -1,113 +1,96 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // =======================================================
-    // 1. Logica Dropdown-ului de Profil
-    // =======================================================
+    console.log("Main.js loaded!");
+
+    // 1. DROPDOWN
     const dropdownButton = document.getElementById('userDropdownButton');
     const dropdownMenu = document.getElementById('userDropdownMenu');
 
     if (dropdownButton) {
         dropdownButton.addEventListener('click', function(event) {
-            // Previne propagarea click-ului pentru a nu declanșa imediat închiderea
             event.stopPropagation(); 
-            // Comută clasa 'show' pentru a afișa/ascunde meniul
             dropdownMenu.classList.toggle('show');
         });
     }
     
-    // Închide dropdown-ul dacă se dă click în afara lui (pe tot documentul)
     window.addEventListener('click', function(event) {
-        // Verifică dacă există meniul și dacă este deschis
         if (dropdownMenu && dropdownMenu.classList.contains('show')) {
-            // Verifică dacă click-ul NU a fost pe butonul trigger SAU în interiorul meniului
             if (!event.target.closest('.user-dropdown')) {
                 dropdownMenu.classList.remove('show');
             }
         }
     });
 
-    
-    // =======================================================
-    // 2. Logica Autocomplete (Căutare)
-    // =======================================================
-    const searchInput = document.getElementById('searchInput');
+    // 2. AUTOCOMPLETE (Corectat)
+    // CORECȚIE: Folosim ID-ul 'searchBox' care există în HTML
+    const searchInput = document.getElementById('searchBox'); 
     const resultsContainer = document.getElementById('autocompleteResults');
     let searchTimeout;
 
-    if (!searchInput) return;
+    if (searchInput && resultsContainer) {
+        console.log("Search elements found.");
 
-    searchInput.addEventListener('keyup', function() {
-        clearTimeout(searchTimeout);
-        
-        const query = searchInput.value.trim();
-        if (query.length < 1) { // Minim 1 caracter pentru căutare
-            resultsContainer.innerHTML = '';
-            resultsContainer.style.display = 'none';
-            return;
-        }
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            clearTimeout(searchTimeout);
 
-        searchTimeout = setTimeout(() => {
-            fetchSuggestions(query);
-        }, 300); // Debounce
-    });
-
-    async function fetchSuggestions(query) {
-        const url = `/search_autocomplete?q=${encodeURIComponent(query)}`;
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                // Tratează codurile HTTP eșuate, de ex. 500
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (query.length < 1) { 
+                resultsContainer.style.display = 'none';
+                return;
             }
-            const data = await response.json();
-            displaySuggestions(data);
-        } catch (error) {
-            console.error('Eroare la preluarea sugestiilor:', error);
-            resultsContainer.innerHTML = '<li>Eroare la încărcare.</li>';
-            resultsContainer.style.display = 'block';
-        }
-    }
 
-    function displaySuggestions(suggestions) {
-        resultsContainer.innerHTML = '';
-        
-        if (suggestions.length === 0) {
-            resultsContainer.style.display = 'none';
-            return;
-        }
+            // Debounce 300ms
+            searchTimeout = setTimeout(() => {
+                console.log("Searching for:", query);
+                fetch(`/search_autocomplete?q=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error");
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Results:", data);
+                        resultsContainer.innerHTML = '';
+                        
+                        if (data.length > 0) {
+                            const ul = document.createElement('ul');
+                            ul.style.listStyle = 'none';
+                            ul.style.margin = '0';
+                            ul.style.padding = '0';
 
-        const ul = document.createElement('ul');
-        suggestions.forEach(suggestion => {
-            const li = document.createElement('li');
-            const a = document.createElement('a');
-            a.href = suggestion.url;
-            a.textContent = suggestion.title;
-            li.appendChild(a);
-            ul.appendChild(li);
+                            data.forEach(movie => {
+                                const li = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.href = movie.url;
+                                a.textContent = movie.title;
+                                // Stiluri directe pentru siguranță
+                                a.style.display = 'block';
+                                a.style.padding = '10px 15px';
+                                a.style.color = '#ccc';
+                                a.style.textDecoration = 'none';
+                                a.style.borderBottom = '1px solid #444';
+                                
+                                a.onmouseover = () => { a.style.backgroundColor = '#333'; a.style.color = '#fff'; };
+                                a.onmouseout = () => { a.style.backgroundColor = 'transparent'; a.style.color = '#ccc'; };
+
+                                li.appendChild(a);
+                                ul.appendChild(li);
+                            });
+                            resultsContainer.appendChild(ul);
+                            resultsContainer.style.display = 'block';
+                        } else {
+                            resultsContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(err => console.error("Search error:", err));
+            }, 300);
         });
 
-        resultsContainer.appendChild(ul);
-        resultsContainer.style.display = 'block';
+        // Ascunde la click în afară
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    } else {
+        console.error("ERROR: searchBox element not found in HTML");
     }
-
-    // Prevents the input from losing focus when clicking inside the results
-    // (Păstrează rezultatele afișate când utilizatorul dă click pe un film)
-    resultsContainer.addEventListener('mousedown', function(e) {
-        e.preventDefault(); 
-    });
-
-    // Ascunde rezultatele când focusul iese din câmpul de căutare
-    searchInput.addEventListener('blur', () => {
-        // Folosim un mic timeout pentru a permite evenimentului mousedown de pe rezultate să se declanșeze
-        setTimeout(() => {
-            resultsContainer.style.display = 'none';
-        }, 150);
-    });
-
-    // Afișează din nou rezultatele la focus (dacă există conținut)
-    searchInput.addEventListener('focus', () => {
-        if (searchInput.value.trim().length >= 1 && resultsContainer.innerHTML) {
-             resultsContainer.style.display = 'block';
-        }
-    });
 });
