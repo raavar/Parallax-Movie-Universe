@@ -6,6 +6,12 @@ gunicorn==20.1.0        # WSGI HTTP server for running the Flask app
 psycopg2-binary==2.9.7  # PostgreSQL database adapter
 email-validator==2.1.1
 
+# API
+requests==2.31.0
+
+# Email
+Flask-Mail==0.9.1
+
 # Administration
 Flask-Admin==1.6.1
 

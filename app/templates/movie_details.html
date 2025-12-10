@@ -11,6 +11,23 @@
         {% if avg_rating is not none %}
             <p>Rating Mediu Global: <strong>{{ "%.1f" | format(avg_rating) }} / 10</strong></p>
         {% endif %}
+
+        {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="img-fluid rounded shadow poster-image">
+        {% else %}
+            {# Fallback image if no poster found #}
+            <div class="placeholder-poster p-5 bg-secondary text-white rounded">
+                <i></i>
+                <p>No Image</p>
+            </div>
+        {% endif %}
+
+        {% if movie.imdb_rating %}
+            <div class="badge text-dark" style="background-color: #d0a817; font-size: 1.1em; padding: 8px 12px;">
+                <strong>Critic rating</strong> {{ movie.imdb_rating }}
+            </div>
+        {% endif %}
+    </article>
         
         {% if current_user.is_authenticated %}
             <hr>

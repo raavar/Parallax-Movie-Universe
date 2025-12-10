@@ -14,7 +14,14 @@
         
         <hr>
         
-        <h2>Filme Recente (4 titluri)</h2>
+        {% if current_user.is_authenticated %}
+            <h2 class="mb-4"> 
+                Recomandări pentru tine ({{ movies|length }})
+            </h2>
+        {% else %}
+            <h2 class="mb-4">Filme Populare ({{ movies|length }})</h2>
+        {% endif %}
+
         <div class="movie-list-grid">
             {% for movie in movies %}
                 <div class="movie-card">

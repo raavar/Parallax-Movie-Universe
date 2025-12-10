@@ -5,13 +5,46 @@ from datetime import date, datetime
 from dotenv import load_dotenv
 from app import app, database
 # Asigură-te că toate modelele necesare sunt importate
-from app.models import Movie, Genre 
+from app.models import Movie, Genre, User
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.session import Session 
 
 # Load environment variables from .env file
 load_dotenv()
 
+def create_admin_user():
+    """Creates a default admin user if it doesn't exist."""
+    print("--- Checking Admin User ---")
+    
+    # We use app_context to access the database
+    with app.app_context():
+        # Ensure tables exist (Good practice to check here too)
+        database.create_all()
+        
+        # Check if admin already exists
+        if User.query.filter_by(email='admin@parallax.com').first():
+            print("Admin user already exists. Skipping.")
+            return
+
+        print("Creating default Admin user...")
+        try:
+            admin_user = User(
+                username='admin',
+                email='admin@parallax.com',
+                is_admin=True,       # Grant Admin Access
+                is_confirmed=True    # <--- CRITICAL: Skip email verification
+            )
+            # Set the password (hashing happens automatically via the model method)
+            admin_user.set_password('admin123') 
+            
+            database.session.add(admin_user)
+            database.session.commit()
+            print("Successfully created user: admin@parallax.com / admin123")
+            
+        except Exception as e:
+            database.session.rollback()
+            print(f"Error creating admin: {e}")
+            
 # Metodă pentru a popula baza de date cu filme din CSV
 def populate_movies_from_csv(csv_file_path='movies.csv'):
     with app.app_context():
@@ -103,4 +136,8 @@ def populate_movies_from_csv(csv_file_path='movies.csv'):
             print(f"A apărut o eroare neașteptată: {e}")
             
 if __name__ == '__main__':
+    # 1. First, create the users (Infrastructure)
+    create_admin_user()
+    
+    # 2. Then, populate the content (Data)
     populate_movies_from_csv()

@@ -27,6 +27,10 @@ class User(database.Model, UserMixin):
     email = database.Column(database.String(255), unique=True, nullable=False)
     password = database.Column(database.String(255), nullable=False)
     
+    # NEW: Confirmation flag (default to False)
+    is_confirmed = database.Column(database.Boolean, default=False)
+    confirmed_on = database.Column(database.DateTime, nullable=True)
+    
     # NOU: Coloană pentru a marca utilizatorii ca administratori
     is_admin = database.Column(database.Boolean, default=False)
 
@@ -58,6 +62,15 @@ class Movie(database.Model):
     description = database.Column(database.Text, nullable=True)
     release_year = database.Column(database.Integer, nullable=True)
     release_date = database.Column(database.Date, nullable=True)
+    poster_url = database.Column(database.String(500), nullable=True)
+    imdb_rating = database.Column(database.String(10), nullable=True)
+    
+    # --- NEW ML FEATURES ---
+    runtime_minutes = database.Column(database.Integer, nullable=True)  # e.g., 120
+    meta_score = database.Column(database.Integer, nullable=True)       # e.g., 85
+    imdb_votes = database.Column(database.BigInteger, nullable=True)    # e.g., 1500000
+    box_office = database.Column(database.BigInteger, nullable=True)    # e.g., 500000000
+    rated = database.Column(database.String(10), nullable=True)         # e.g., "PG-13"
 
     # Relația Mulți-la-Mulți (pentru a accesa Movie.genres)
     genres = database.relationship(
