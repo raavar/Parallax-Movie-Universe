@@ -2,52 +2,78 @@
 {% block title %}Acasa - Parallax{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="p-5 mb-4 bg-dark rounded-3">
-        <div class="container-fluid py-2">
-            <h1 class="display-5 fw-bold">Bine ați venit în Parallax!</h1>
-            <p class="col-md-8 fs-4">Recomandări personalizate și noutăți din lumea filmului.</p>
-            <a class="btn btn-primary btn-lg" href="{{ url_for('catalog') }}" role="button">Explorează întregul Catalog</a>
+<div class="container-fluid"> <div class="hero-section mt-5 mb-5" style="text-align: center; width: 100%;">
+        <h1 class="display-1 fw-bold parallax-title">PARALLAX</h1>
+    </div>
+
+    <div class="recommendations-wrapper">
+        <div class="recommendation-heading-container">
+            <h2 class="recommendation-heading">Your recommendations</h2>
+        </div>
+        <div class="carousel-container position-relative">
+            <button class="carousel-btn btn-left" id="slideLeft">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="horizontal-scroll-container" id="scrollContainer">
+                {% for movie in movies %}
+                    <div class="movie-card-horizontal">
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="horizontal-poster-wrapper">
+                            {% if movie.poster_url %}
+                                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" loading="lazy">
+                            {% else %}
+                                <div class="horizontal-placeholder"><i class="fas fa-film"></i></div>
+                            {% endif %}
+                        </a>
+                        <div class="horizontal-card-body">
+                            <h6 class="text-truncate mt-2 mb-1" title="{{ movie.title }}">
+                                <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="text-decoration-none text-white">{{ movie.title }}</a>
+                            </h6>
+                            <span class="badge bg-dark border border-secondary">{{ movie.release_year }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button class="carousel-btn btn-right" id="slideRight">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
 
-    <h2 class="mt-4 mb-3 border-bottom pb-2">Recomandări pentru tine</h2>
-    
-    <div class="movie-list-grid">
-        {% for movie in movies %}
-            <div class="movie-card">
-                <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
-                    {% if movie.poster_url %}
-                        <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="card-poster" loading="lazy">
-                    {% else %}
-                        <div class="card-poster-placeholder">
-                            <i class="fas fa-film"></i>
-                        </div>
-                    {% endif %}
-                </a>
-
-                <div class="movie-card-content">
-                    <h3>
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a>
-                        <span class="year-badge">({{ movie.release_year }})</span>
-                    </h3>
-                    
-                    <p class="small text-muted mb-2">
-                        {% for genre in movie.genres[:2] %}
-                            <span class="badge bg-secondary" style="font-size: 0.7em;">{{ genre.name }}</span>
-                        {% endfor %}
-                    </p>
-
-                    <p class="description">{{ movie.description[:60] }}{% if movie.description|length > 60 %}...{% endif %}</p>
-                    
-                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-secondary w-100 mt-auto">Detalii</a>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-
     {% if not movies %}
-        <p class="text-muted">Momentan nu există recomandări disponibile.</p>
+        <div class="text-center mt-5">
+            <p class="text-muted">No recommendations available at the moment.</p>
+        </div>
     {% endif %}
+    <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 80px;">
+        
+        <a href="{{ url_for('catalog') }}" 
+           class="btn btn-primary shadow-lg home-explore-btn" 
+           role="button">
+            Explore more movies
+        </a>
+        
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('scrollContainer');
+        const btnLeft = document.getElementById('slideLeft');
+        const btnRight = document.getElementById('slideRight');
+
+        if(container && btnLeft && btnRight) {
+            btnLeft.addEventListener('click', function() {
+                // Scrolează la stânga cu 500px
+                container.scrollBy({ left: -500, behavior: 'smooth' });
+            });
+
+            btnRight.addEventListener('click', function() {
+                // Scrolează la dreapta cu 500px
+                container.scrollBy({ left: 500, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
 {% endblock %}
