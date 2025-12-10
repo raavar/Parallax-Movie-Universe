@@ -623,46 +623,40 @@ def settings():
                            profile_form=profile_form,
                            password_form=password_form)
 
+# 1. RATING-URILE MELE (Pagina nouă)
+@app.route("/my_ratings")
+@login_required
+def my_ratings():
+    # Preluăm doar ratingurile, ordonate după data când au fost date
+    user_ratings = Rating.query.filter_by(user_id=current_user.id).order_by(Rating.timestamp.desc()).all()
+    
+    return render_template('my_ratings.html', 
+                           title='Rating-urile Mele', 
+                           user_ratings=user_ratings)
+
+# 2. WATCHLIST (Modificat pentru a trimite obiectele, nu doar filmele)
 @app.route("/watchlist")
 @login_required
 def watchlist():
-    # Preia toate intrările din ToWatchList pentru utilizatorul curent
-    watchlist_items = ToWatchList.query.filter_by(user_id=current_user.id).all()
-    
-    # Extrage obiectele Movie asociate
-    movies = [item.movie for item in watchlist_items]
-    
-    # Sortare (opțional, poți adăuga sortare/paginare complexă aici)
-    # Deocamdată, le afișăm în ordinea în care au fost adăugate (sau după ID-ul filmului)
+    # Trimitem obiectele ToWatchList pentru a avea acces la data adăugării (date_added)
+    watchlist_items = ToWatchList.query.filter_by(user_id=current_user.id).order_by(ToWatchList.date_added.desc()).all()
     
     return render_template('watchlist.html', 
                            title='Lista Mea de Vizionare', 
-                           movies=movies)
+                           watchlist_items=watchlist_items)
 
-## --- Rută: Filme Văzute și Rating-uri ---
-
+# 3. FILME VĂZUTE (Modificat să interogheze SeenList)
 @app.route("/seen_list")
 @login_required
 def seen_list():
-    # Preia toate rating-urile oferite de utilizatorul curent
-    # Folosim .all() pentru a obține toate obiectele Rating
-    ratings = Rating.query.filter_by(user_id=current_user.id).order_by(Rating.timestamp.desc()).all()
+    # Preluăm intrările din SeenList, ordonate cronologic
+    seen_entries = SeenList.query.filter_by(user_id=current_user.id).order_by(SeenList.date_added.desc()).all()
     
-    # ratings_data va conține (obiectul Movie, rating-ul dat)
-    seen_movies_data = []
-    for rating in ratings:
-        # Asumăm că modelul Rating are o relație 'movie' care returnează obiectul Movie
-        if rating.movie:
-            seen_movies_data.append({
-                'movie': rating.movie,
-                'score': rating.score,
-                'rating_id': rating.id
-            })
-
     return render_template('seen_list.html', 
-                           title='Filme Văzute și Evaluările Mele', 
-                           seen_movies=seen_movies_data)
+                           title='Filme Văzute', 
+                           seen_entries=seen_entries)
 
+# 4. TOGGLE WATCHLIST (Funcția de comutare)
 @app.route('/toggle_watchlist/<int:movie_id>', methods=['POST'])
 @login_required
 def toggle_watchlist(movie_id):
@@ -671,21 +665,14 @@ def toggle_watchlist(movie_id):
     entry = ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()
     
     if entry:
-        # Dacă există, șterge-o (Remove from Watchlist)
+        # Șterge (Remove)
         database.session.delete(entry)
         flash(f'"{movie.title}" a fost eliminat din lista De Vizionare.', 'info')
-        status = 'removed'
     else:
-        # Dacă nu există, adaugă-o (Add to Watchlist)
+        # Adaugă (Add)
         new_entry = ToWatchList(user_id=current_user.id, movie_id=movie.id)
         database.session.add(new_entry)
-        
-        # Opțional: Șterge-o din SeenList/Rating dacă utilizatorul o adaugă în Watchlist
-        # (Această logică poate fi controversată, deocamdată o lăsăm simplă)
-
         flash(f'"{movie.title}" a fost adăugat în lista De Vizionare.', 'success')
-        status = 'added'
 
     database.session.commit()
-    # Redirectarea înapoi la pagina de detalii
     return redirect(url_for('movie_details', movie_id=movie_id))

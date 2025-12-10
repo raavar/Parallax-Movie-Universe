@@ -1,41 +1,39 @@
 {% extends "base.html" %}
-{% block title %}Filme Văzute și Evaluările Mele{% endblock %}
+{% block title %}Filme Văzute{% endblock %}
 
 {% block content %}
-    <div class="container my-5">
-        <h1>Filme Văzute și Evaluările Mele ({{ seen_movies|length }} Filme)</h1>
-        <hr>
-        
-        {% if seen_movies %}
-            <div class="row">
-                {% for data in seen_movies %}
-                    {% set movie = data.movie %}
-                    {% set score = data.score %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">
-                                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a>
-                                </h5>
-                                <p class="card-text mb-1">
-                                    **Evaluarea ta:** <span class="badge bg-warning text-dark fs-5">{{ score }}/10</span> 
-                                    <i class="fas fa-star"></i>
-                                </p>
-                                <p class="card-text small text-muted">
-                                    {% for genre in movie.genres %}
-                                        <span class="badge bg-secondary">{{ genre.name }}</span>
-                                    {% endfor %}
-                                </p>
-                                <div class="mt-auto">
-                                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-outline-primary">Vezi Detalii</a>
-                                </div>
-                            </div>
+<div class="container">
+    <h2 class="mb-4 border-bottom pb-2">Filme Văzute ({{ seen_entries|length }})</h2>
+    
+    {% if seen_entries %}
+        <div class="movie-list-grid">
+            {% for entry in seen_entries %}
+                {% set movie = entry.movie %}
+                <div class="movie-card">
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
+                        {% if movie.poster_url %}
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="card-poster" loading="lazy">
+                        {% else %}
+                            <div class="card-poster-placeholder"><i class="fas fa-film"></i></div>
+                        {% endif %}
+                    </a>
+                    <div class="movie-card-content">
+                        <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
+                        
+                        <div class="mb-2">
+                             <span class="badge btn-info"><i class="fas fa-check"></i> Văzut</span>
                         </div>
+
+                        <p class="small text-muted mt-auto">
+                            Adăugat pe: {{ entry.date_added.strftime('%d-%m-%Y') }}
+                        </p>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="alert alert-info">Nu ai evaluat încă niciun film. Începe să oferi rating-uri!</p>
-        {% endif %}
-    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Nu ai marcat niciun film ca văzut.</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Vezi Catalogul</a>
+    {% endif %}
+</div>
 {% endblock %}

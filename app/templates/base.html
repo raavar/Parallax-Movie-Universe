@@ -51,12 +51,24 @@
                         </button>
 
                         <div class="dropdown-menu" id="userDropdownMenu">
-                            <a href="{{ url_for('user_profile', user_id=current_user.id) }}" class="dropdown-item">Your profile</a>
-                            <a href="{{ url_for('watchlist') }}" class="dropdown-item">Your Watchlist</a>
-                            <a href="{{ url_for('seen_list') }}" class="dropdown-item">Your ratings / Seen List</a>
+                            <a href="{{ url_for('user_profile', user_id=current_user.id) }}" class="dropdown-item">Profilul tău</a>
+                            
                             <div class="dropdown-divider"></div>
-                            <a href="{{ url_for('settings') }}" class="dropdown-item">Account settings</a>
-                            <a href="{{ url_for('logout') }}" class="dropdown-item">Sign out</a>
+                            
+                            <a href="{{ url_for('watchlist') }}" class="dropdown-item">
+                                <i class="fas fa-bookmark me-2"></i> Watchlist
+                            </a>
+                            <a href="{{ url_for('seen_list') }}" class="dropdown-item">
+                                <i class="fas fa-eye me-2"></i> Filme Văzute (Seen List)
+                            </a>
+                            <a href="{{ url_for('my_ratings') }}" class="dropdown-item">
+                                <i class="fas fa-star me-2"></i> Rating-urile Tale
+                            </a>
+                            
+                            <div class="dropdown-divider"></div>
+
+                            <a href="{{ url_for('settings') }}" class="dropdown-item">Setări Cont</a>
+                            <a href="{{ url_for('logout') }}" class="dropdown-item">Deconectare</a>
                         </div>
                     </div>
                 {% else %}
