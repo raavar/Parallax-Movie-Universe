@@ -7,6 +7,10 @@
     
     {# Legătura către fișierul CSS #}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     {# Secțiune pentru JS specific paginii #}
     {% block head_extra %}{% endblock %}
@@ -28,22 +32,36 @@
             </form>
 
             <div class="nav-links">
-                <a href="{{ url_for('catalog') }}">Catalog</a>
+                <a href="{{ url_for('catalog') }}" class="nav-button">Catalog</a>
 
                 {% if current_user.is_authenticated %}
-                    <a class="nav-item nav-link btn btn-warning me-2" href="{{ url_for('watchlist') }}">
-                        <i class="fas fa-list-alt"></i> Watchlist
-                    </a>
                     
-                    <a class="nav-item nav-link btn btn-info me-2" href="{{ url_for('seen_list') }}">
-                        <i class="fas fa-star"></i> Filme Văzute
+                    <a href="{{ url_for('watchlist') }}" class="nav-button watchlist-main-button">
+                        <i class="fas fa-plus"></i> Watchlist
                     </a>
-                    <a href="{{ url_for('settings') }}">Setări</a>
-                    <a href="{{ url_for('user_profile', user_id=current_user.id) }}">Profil</a>
-                    <a href="{{ url_for('logout') }}">Delogare ({{ current_user.username }})</a>
+
+                    <div class="user-dropdown">
+                        
+                        <button class="dropdown-toggle" id="userDropdownButton" type="button">
+                            <i class="fas fa-user-circle profile-icon"></i> 
+                            
+                            <span class="username-text">{{ current_user.username }}</span>
+                            
+                            <i class="fas fa-caret-down arrow-icon"></i>
+                        </button>
+
+                        <div class="dropdown-menu" id="userDropdownMenu">
+                            <a href="{{ url_for('user_profile', user_id=current_user.id) }}" class="dropdown-item">Your profile</a>
+                            <a href="{{ url_for('watchlist') }}" class="dropdown-item">Your Watchlist</a>
+                            <a href="{{ url_for('seen_list') }}" class="dropdown-item">Your ratings / Seen List</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('settings') }}" class="dropdown-item">Account settings</a>
+                            <a href="{{ url_for('logout') }}" class="dropdown-item">Sign out</a>
+                        </div>
+                    </div>
                 {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                    <a href="{{ url_for('register') }}">Înregistrare</a>
+                    <a href="{{ url_for('login') }}" class="nav-button">Login</a>
+                    <a href="{{ url_for('register') }}" class="nav-button">Înregistrare</a>
                 {% endif %}
             </div>
         </nav>
