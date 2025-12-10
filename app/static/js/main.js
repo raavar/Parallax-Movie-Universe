@@ -60,11 +60,15 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsContainer.style.display = 'block';
     }
 
+    // Prevent the input from losing focus when clicking inside the results
+    resultsContainer.addEventListener('mousedown', function(e) {
+        // This prevents the 'blur' event from firing on the input
+        e.preventDefault(); 
+    });
+
     // Ascunde rezultatele când focusul iese din câmpul de căutare
     searchInput.addEventListener('blur', () => {
-        setTimeout(() => {
-            resultsContainer.style.display = 'none';
-        }, 150); // Mic delay pentru a permite click-ul pe link
+        resultsContainer.style.display = 'none';
     });
 
     // Afișează din nou rezultatele la focus

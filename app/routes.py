@@ -1,11 +1,17 @@
 from flask import render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import func, desc, asc, distinct, and_
+from sqlalchemy import func, desc, asc, distinct, and_, cast, Float
 from app import app, database
 from app.models import User, Movie, Rating, SeenList, ToWatchList, Genre
+import random
 from app.utility_modules.data_exporter import export_movie_list_to_csv
 from app.utility_modules.qr_generator import generate_user_qr_code
+from app.utility_modules.token_manager import confirm_token
+from app.utility_modules.email_sender import send_confirmation_email
+from app.utility_modules.movie_data_fetcher import fetch_movie_data
+from app.utility_modules.recommendation_engine import get_recommendations
+from datetime import datetime
 from app.forms import UpdateProfileForm, ChangePasswordForm
 
 # ==========================================================================================
@@ -18,14 +24,25 @@ from app.forms import UpdateProfileForm, ChangePasswordForm
 def home():
     # Logic for home page
     
-    # Fetch some movies to display on the home page
-    movies = Movie.query.order_by(Movie.id).limit(18).all()
+    recommendations = []
 
-    # Get some recommendations for the current user
-    recommendations = []    # Placeholder
+    # 2. IF user is logged in, try to run the AI engine
+    if current_user.is_authenticated:
+        try:
+            # CALL THE FUNCTION HERE using the user's ID
+            recommendations = get_recommendations(current_user.id, 20)
+        except Exception as e:
+            print(f"Error getting recommendations: {e}")
+            recommendations = []
+
+    # 3. If ML failed or user is logged out, just show 20 random movies
+    if not recommendations:
+        recommendations = Movie.query.order_by(func.random()).limit(20).all()
+        
+    movies = recommendations
 
     # Render the home template with movies and recommendations
-    return render_template('index.html', title='Home', movies=movies, recommendations=recommendations)
+    return render_template('index.html', title='Home', movies=recommendations)
 
 # --- Rută: Catalogul Complet ('/catalog') cu Paginare, Filtre și Sortare ---
 
@@ -133,15 +150,18 @@ def register():
         # Try to create a new user
         try:
             # Create user and hash password
-            user = User(username=username, email=email)
+            user = User(username=username, email=email, is_confirmed=False)
             user.set_password(password)
 
             # Add user to the database and commit
             database.session.add(user)
             database.session.commit()
-
+            
+            # Send mail
+            send_confirmation_email(user.email)
+            
             # Inform the user of successful registration and redirect to login page
-            flash('Registration successful! You can now log in.', 'success')
+            flash('A confirmation email has been sent via email.', 'success')
             return redirect(url_for('login'))
         
         except IntegrityError:
@@ -156,6 +176,27 @@ def register():
 
     # Render the registration template
     return render_template('register.html', title='Register')
+
+@app.route('/confirm/<token>')
+def confirm_email(token):
+    try:
+        email = confirm_token(token)
+    except:
+        flash('The confirmation link is invalid or has expired.', 'danger')
+        return redirect(url_for('login'))
+        
+    user = User.query.filter_by(email=email).first_or_404()
+    
+    if user.is_confirmed:
+        flash('Account already confirmed. Please login.', 'success')
+    else:
+        user.is_confirmed = True
+        user.confirmed_on = datetime.now()
+        database.session.add(user)
+        database.session.commit()
+        flash('You have confirmed your account. Thanks!', 'success')
+        
+    return redirect(url_for('login'))
 
 # User login route
 @app.route('/login', methods=['GET', 'POST'])
@@ -178,6 +219,11 @@ def login():
 
         # Check if user exists and password is correct
         if user and user.check_password(password):
+            # NEW: Check if confirmed
+            if not user.is_confirmed:
+                flash('Please confirm your account via the email link provided.', 'warning')
+                return redirect(url_for('login'))
+            
             # Log the user in and log a success message
             login_user(user, remember=remember)
             flash('Login successful!', 'success')
@@ -270,6 +316,24 @@ def movie_details(movie_id):
     # Find the movie by ID
     movie = Movie.query.get_or_404(movie_id)
 
+    if not movie.poster_url or not movie.imdb_rating:
+        data = fetch_movie_data(movie.title, movie.release_year)
+        if data:
+            # Update only what is missing or new
+            if data['poster']:
+                movie.poster_url = data['poster']
+            if data['rating']:
+                movie.imdb_rating = data['rating']
+                
+            # Save new ML features
+            if data['rated']: movie.rated = data['rated']
+            if data['runtime']: movie.runtime_minutes = data['runtime']
+            if data['metascore']: movie.meta_score = data['metascore']
+            if data['imdb_votes']: movie.imdb_votes = data['imdb_votes']
+            if data['box_office']: movie.box_office = data['box_office']
+                
+            database.session.commit()
+
     # Fetch ratings for the movie
     ratings = Rating.query.filter_by(movie_id=movie.id).all()
 
@@ -278,8 +342,18 @@ def movie_details(movie_id):
     if ratings:
         avg_rating = sum(rating.score for rating in ratings) / len(ratings)
 
+    # Calculate the user rating
+    user_rating = None
+    if current_user.is_authenticated:
+        user_rating = Rating.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()
+
     # Render the movie details template
-    return render_template('movie_details.html', title=movie.title, movie=movie, ratings=ratings, avg_rating=avg_rating)
+    return render_template('movie_details.html', 
+                           title=movie.title, 
+                           movie=movie, 
+                           ratings=ratings, 
+                           avg_rating=avg_rating, 
+                           user_rating=user_rating)
 
 # Rate movie route
 @app.route('/rate_movie/<int:movie_id>', methods=['POST'])

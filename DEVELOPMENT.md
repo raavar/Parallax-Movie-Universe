@@ -2,6 +2,10 @@
 
 This document outlines the essential commands for setting up and working with the Dockerized environment locally. Since we are **not** using a centralized Docker Registry (Docker Hub), every collaborator must perform the initial build.
 
+## 0. ⚙️ Before setup note
+
+Before starting the setup you need to create the .env file with contents: `APP_SECRET_KEY`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_URL`.
+
 ## 1. 🚀 Initial Setup: Build & Run
 
 Run this command **once** when starting the project for the first time, or whenever you modify the `Dockerfile` or `requirements.txt`.

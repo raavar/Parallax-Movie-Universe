@@ -4,6 +4,7 @@ from flask_login import LoginManager, current_user
 from flask_admin import Admin                       # NOU
 from flask_admin.contrib.sqla import ModelView      # NOU
 from flask_admin import AdminIndexView              # NOU: Import necesar
+from flask_mail import Mail
 from app.config import Config
 
 
@@ -12,6 +13,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 database = SQLAlchemy(app)
 login_manager = LoginManager(app)
+
+# Initialize Mail
+mail = Mail(app)
 
 
 # --- 1. Definirea Clasei Rădăcină (Index View) ---

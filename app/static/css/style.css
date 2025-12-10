@@ -293,3 +293,14 @@ h1, h2, h3 {
     color: white;
     border: 1px solid #555;
 }
+
+.poster-image {
+    max-height: 500px;
+    width: auto;
+    border: 4px solid #333;
+    transition: transform 0.3s;
+}
+
+.poster-image:hover {
+    transform: scale(1.02);
+}
