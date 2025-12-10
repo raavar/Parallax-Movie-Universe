@@ -319,37 +319,7 @@ def movie_details(movie_id):
     # Find the movie by ID
     movie = Movie.query.get_or_404(movie_id)
 
-    # --- 1. PRELUARE ȘI ACTUALIZARE METADATE (IMDb, Poster, ML Features) ---
-    # Presupunem că fetch_movie_data este importată și disponibilă
-    if not movie.poster_url or not movie.imdb_rating:
-        try:
-            # ✅ CORECȚIE: Activează apelul funcției de preluare
-            # Asigură-te că funcția fetch_movie_data este importată la începutul routes.py!
-            data = fetch_movie_data(movie.title, movie.release_year) 
-            # data = None # Șterge această linie!
-            
-        except NameError:
-            # Dacă funcția nu este importată/definită, tratează-o ca None pentru a preveni crash-ul
-            data = None
-            current_app.logger.warning("fetch_movie_data nu este disponibilă; metadatele nu pot fi preluate.")
-        
-        if data:
-            # Update only what is missing or new
-            if data['poster']:
-                movie.poster_url = data['poster']
-            if data['rating']:
-                movie.imdb_rating = data['rating']
-                
-            # Save new ML features
-            if data.get('rated'): movie.rated = data['rated']
-            if data.get('runtime'): movie.runtime_minutes = data['runtime']
-            if data.get('metascore'): movie.meta_score = data['metascore']
-            if data.get('imdb_votes'): movie.imdb_votes = data['imdb_votes']
-            if data.get('box_office'): movie.box_office = data['box_office']
-                
-            database.session.commit()
-
-    # --- 2. PRELUARE RATING-URI GLOBALE ---
+    # --- 1. PRELUARE RATING-URI GLOBALE ---
     # Fetch ratings for the movie
     ratings = Rating.query.filter_by(movie_id=movie.id).all()
 
@@ -358,7 +328,7 @@ def movie_details(movie_id):
     if ratings:
         avg_rating = sum(rating.score for rating in ratings) / len(ratings)
 
-    # --- 3. PRELUARE STAREA UTILIZATORULUI ---
+    # --- 2. PRELUARE STAREA UTILIZATORULUI ---
     is_in_watchlist = False
     is_seen = False
     user_rating_score = None
