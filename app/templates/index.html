@@ -1,34 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Acasă{% endblock %}
+{% block title %}Acasa - Parallax{% endblock %}
 
 {% block content %}
-    <div class="container home-page">
-        <h1>Bine ați venit în Parallax!</h1>
-        <p class="lead">Recomandări personalizate și noutăți din lumea filmului.</p>
-
-        <div class="my-4">
-            <a href="{{ url_for('catalog') }}" class="btn btn-success btn-lg">
-                Explorează întregul Catalog
-            </a>
+<div class="container">
+    <div class="p-5 mb-4 bg-dark rounded-3">
+        <div class="container-fluid py-2">
+            <h1 class="display-5 fw-bold">Bine ați venit în Parallax!</h1>
+            <p class="col-md-8 fs-4">Recomandări personalizate și noutăți din lumea filmului.</p>
+            <a class="btn btn-primary btn-lg" href="{{ url_for('catalog') }}" role="button">Explorează întregul Catalog</a>
         </div>
-        
-        <hr>
-        
-        {% if current_user.is_authenticated %}
-            <h2 class="mb-4"> 
-                Recomandări pentru tine ({{ movies|length }})
-            </h2>
-        {% else %}
-            <h2 class="mb-4">Filme Populare ({{ movies|length }})</h2>
-        {% endif %}
+    </div>
 
-        <div class="movie-list-grid">
-            {% for movie in movies %}
-                <div class="movie-card">
-                    <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
+    <h2 class="mt-4 mb-3 border-bottom pb-2">Recomandări pentru tine</h2>
+    
+    <div class="movie-list-grid">
+        {% for movie in movies %}
+            <div class="movie-card">
+                <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
+                    {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="card-poster" loading="lazy">
+                    {% else %}
+                        <div class="card-poster-placeholder">
+                            <i class="fas fa-film"></i>
+                        </div>
+                    {% endif %}
+                </a>
+
+                <div class="movie-card-content">
+                    <h3>
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a>
+                        <span class="year-badge">({{ movie.release_year }})</span>
+                    </h3>
+                    
+                    <p class="small text-muted mb-2">
+                        {% for genre in movie.genres[:2] %}
+                            <span class="badge bg-secondary" style="font-size: 0.7em;">{{ genre.name }}</span>
+                        {% endfor %}
+                    </p>
+
+                    <p class="description">{{ movie.description[:60] }}{% if movie.description|length > 60 %}...{% endif %}</p>
+                    
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-secondary w-100 mt-auto">Detalii</a>
                 </div>
-            {% endfor %}
-        </div>
-        
-        </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if not movies %}
+        <p class="text-muted">Momentan nu există recomandări disponibile.</p>
+    {% endif %}
+</div>
 {% endblock %}

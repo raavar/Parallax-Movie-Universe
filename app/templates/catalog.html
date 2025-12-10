@@ -74,14 +74,36 @@
         <div class="movie-list-grid">
             {% for movie in movies %}
                 <div class="movie-card">
-                    <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a></h3>
-                    <p class="small text-muted">
-                        {% for genre in movie.genres %}
-                            <span class="badge bg-secondary">{{ genre.name }}</span>
-                        {% endfor %}
-                    </p>
-                    <p class="description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
-                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-secondary">Detalii</a>
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
+                        {% if movie.poster_url %}
+                            <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="card-poster" loading="lazy">
+                        {% else %}
+                            <div class="card-poster-placeholder">
+                                <i class="fas fa-film"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="movie-card-content">
+                        <h3>
+                            <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a> 
+                            <span class="year-badge">({{ movie.release_year }})</span>
+                        </h3>
+                        
+                        {# Genurile ca tag-uri #}
+                        <p class="small text-muted genres-row">
+                            {% for genre in movie.genres[:3] %} {# Afișăm maxim 3 genuri să nu strice layout-ul #}
+                                <span class="badge bg-secondary">{{ genre.name }}</span>
+                            {% endfor %}
+                            {% if movie.genres|length > 3 %}
+                                <span class="badge bg-dark">+{{ movie.genres|length - 3 }}</span>
+                            {% endif %}
+                        </p>
+
+                        <p class="description">{{ movie.description[:80] }}{% if movie.description|length > 80 %}...{% endif %}</p>
+                        
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-secondary w-100 mt-auto">Detalii</a>
+                    </div>
                 </div>
             {% endfor %}
         </div>

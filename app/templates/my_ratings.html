@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Watchlist{% endblock %}
+{% block title %}Rating-urile Mele{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4 border-bottom pb-2">Lista Mea de Vizionare ({{ watchlist_items|length }})</h2>
+    <h2 class="mb-4 border-bottom pb-2">Rating-urile Tale ({{ user_ratings|length }})</h2>
     
-    {% if watchlist_items %}
+    {% if user_ratings %}
         <div class="movie-list-grid">
-            {% for item in watchlist_items %}
-                {% set movie = item.movie %}
+            {% for rating in user_ratings %}
+                {% set movie = rating.movie %}
                 <div class="movie-card">
                     <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
                         {% if movie.poster_url %}
@@ -21,23 +21,21 @@
                         <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
                         
                         <div class="mb-2">
-                             <span class="badge bg-warning text-dark"><i class="fas fa-bookmark"></i> Watchlist</span>
+                            <span class="badge bg-warning text-dark fs-6">
+                                <i class="fas fa-star"></i> {{ rating.score }}/10
+                            </span>
                         </div>
-
-                        <p class="small text-muted mt-auto">
-                            Adăugat pe: {{ item.date_added.strftime('%d-%m-%Y') }}
-                        </p>
                         
-                        <form method="POST" action="{{ url_for('toggle_watchlist', movie_id=movie.id) }}" class="mt-2">
-                             <button type="submit" class="btn btn-sm btn-outline-danger w-100">Elimină</button>
-                        </form>
+                        <p class="small text-muted mt-auto">
+                            Evaluat pe: {{ rating.timestamp.strftime('%d-%m-%Y') }}
+                        </p>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Lista ta este goală.</p>
-        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Explorează Catalogul</a>
+        <p class="text-muted">Nu ai oferit încă niciun rating.</p>
+        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Vezi Catalogul</a>
     {% endif %}
 </div>
 {% endblock %}
