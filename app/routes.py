@@ -9,7 +9,6 @@ from app.utility_modules.data_exporter import export_movie_list_to_csv
 from app.utility_modules.qr_generator import generate_user_qr_code
 from app.utility_modules.token_manager import confirm_token
 from app.utility_modules.email_sender import send_confirmation_email
-from app.utility_modules.movie_data_fetcher import fetch_movie_data
 from app.utility_modules.recommendation_engine import get_recommendations
 from datetime import datetime
 from app.forms import UpdateProfileForm, ChangePasswordForm

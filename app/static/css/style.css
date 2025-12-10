@@ -594,24 +594,23 @@ h1, h2, h3 {
 
 /* Buton Watchlist */
 .btn-warning {
-    background-color: #ffd700; 
-    border-color: #ffd700;
+    background-color: #DC3551; 
+    border-color: #DC3551;
     color: #1a1a1a;
     font-weight: bold;
     border-radius: 8px;
 }
 .btn-warning:hover {
-    background-color: #e6c200; 
-    border-color: #e6c200;
+    background-color: #DC3551; 
+    border-color: #DC3551;
     color: #1a1a1a;
 }
 .btn-warning-checked {
-    background-color: #ffd700; 
-    border-color: #ffd700;
+    background-color: #DC3551; 
+    border-color: #DC3551;
     color: #1a1a1a;
 }
-.btn-warning-checked:hover { background-color: #ffc400; }
-
+.btn-warning-checked:hover { background-color: #DC3551; }
 /* Buton Văzut */
 .btn-info {
     background-color: #333; 
@@ -637,7 +636,7 @@ h1, h2, h3 {
 
 /* FILTRE (Catalog) */
 .filter-heading {
-    color: #ffd700;
+    color: #DC3551;
     font-size: 1.1em;
     font-weight: bold;
     margin-bottom: 10px;
@@ -658,9 +657,9 @@ h1, h2, h3 {
 .btn-tag-default { background-color: #333; color: #ccc; }
 .btn-tag-default:hover { background-color: #555; }
 .btn-tag-selected {
-    background-color: #ffd700;
+    background-color: #DC3551;
     color: #1a1a1a;
-    border-color: #ffd700;
+    border-color: #DC3551;
     font-weight: bold;
 }
 .btn-clear-filter {
