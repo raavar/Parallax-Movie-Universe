@@ -626,6 +626,7 @@ h1, h2, h3 {
     color: #ccc;
     background-color: transparent;
     border-radius: 8px;
+    text-align: center;
 }
 .btn-outline-secondary:hover { background-color: #333; color: white; }
 
@@ -725,4 +726,97 @@ h1, h2, h3 {
     height: 1px;              
     background-color: #f7cdd0;   
     opacity: 0.5;             
+}
+
+.custom-pagination {
+    list-style: none; 
+    padding-left: 0;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.custom-pagination .page-item {
+    margin: 0 4px; 
+    display: inline-block; 
+}
+
+
+
+.custom-pagination .page-link {
+    background-color: #1a1a1a; 
+    border: 1px solid #333; 
+    color: #f0f0f0; 
+    border-radius: 8px; 
+    transition: all 0.2s ease;
+    padding: 8px 15px;
+    display: block;
+    /* Scoate orice decorație implicită */
+    text-decoration: none; 
+}
+
+.custom-pagination .page-link:hover {
+    background-color: #333;
+    border-color: #DC3551;
+    color: white;
+}
+
+/* Stil pentru pagina activă (Roșu) */
+.custom-pagination .page-item.active .page-link {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+}
+
+/* Stil pentru butonul dezactivat (Previous/Next) */
+.custom-pagination .page-item.disabled .page-link {
+    background-color: #222;
+    border-color: #333;
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Ajustare margine stânga/dreapta pentru a arăta ca un bloc */
+.custom-pagination .page-item:first-child .page-link {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+.custom-pagination .page-item:last-child .page-link {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Aplică stilul Butonului Principal pentru Previous/Next */
+.custom-pagination .page-item:first-child .page-link,
+.custom-pagination .page-item:last-child .page-link {
+    background-color: #2a2a2a; /* Ceva mai deschis pentru butoanele mari */
+    border-color: #444;
+}
+
+.custom-pagination .page-item:first-child .page-link:hover,
+.custom-pagination .page-item:last-child .page-link:hover {
+    background-color: #DC3551;
+    border-color: #DC3551;
+    color: white;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    /* Stilurile de bază pentru disabled (din răspunsul anterior) */
+    background-color: #222;
+    border-color: #333;
+    color: #666;
+    cursor: not-allowed;
+    
+    /* CRITIC: Anulează efectele de hover */
+    pointer-events: none; /* Previne orice interacțiune cu mouse-ul */
+    text-decoration: none;
+}
+
+/* Asigură-te că nu există nicio schimbare de culoare la hover pentru elementele .disabled */
+.custom-pagination .page-item.disabled .page-link:hover,
+.custom-pagination .page-item.disabled .page-link:focus {
+    background-color: #222; /* Fundalul rămâne la culoarea dezactivată */
+    border-color: #333;
+    color: #666;
 }
