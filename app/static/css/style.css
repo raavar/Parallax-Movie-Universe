@@ -241,16 +241,95 @@ h1, h2, h3 {
     margin-top: 20px;
 }
 
+/* --- Stiluri Noi pentru Cardurile din Catalog --- */
+
+/* Ajustăm cardul să fie Flexbox vertical pentru a alinia butonul jos */
 .movie-card {
     background-color: #1f1f1f;
-    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    overflow: hidden; /* Asigură că imaginea nu iese din colțurile rotunjite */
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Scoatem padding-ul general pentru ca poza să fie lipită de margini */
+    transition: transform 0.2s;
+    height: 100%; /* Face cardurile să aibă înălțime egală în grid */
 }
 
-.movie-card h3 a {
-    color: #4CAF50;
-    text-decoration: none;
+.movie-card:hover {
+    transform: translateY(-5px); /* Efect de ridicare la hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+}
+
+/* Containerul pentru poster */
+.movie-poster-wrapper {
+    width: 100%;
+    height: 350px; /* Înălțime fixă pentru uniformitate */
+    background-color: #000;
+    overflow: hidden;
+    display: block;
+}
+
+/* Imaginea propriu-zisă */
+.card-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Taie imaginea ca să umple spațiul fără să o deformeze */
+    transition: opacity 0.3s;
+}
+
+.card-poster:hover {
+    opacity: 0.9;
+}
+
+/* Placeholder pentru lipsă imagine */
+.card-poster-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: #555;
+    font-size: 3em;
+}
+
+/* Zona de text */
+.movie-card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Umple restul spațiului */
+}
+
+.movie-card h3 {
+    font-size: 1.1em;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border: none;
+    line-height: 1.3;
+}
+
+.year-badge {
+    font-size: 0.8em;
+    color: #999;
+    font-weight: normal;
+}
+
+.genres-row {
+    margin-bottom: 10px;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-bottom: 15px;
+    flex-grow: 1; /* Împinge butonul jos */
+}
+
+/* Ajustare buton detalii */
+.movie-card .btn {
+    margin-right: 0; /* Resetare margine */
 }
 
 /* QR Code */

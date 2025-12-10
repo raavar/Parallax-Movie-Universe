@@ -77,7 +77,7 @@ class Movie(database.Model):
         'Genre', 
         secondary=movie_genre_association, # Folosește tabela de asociere
         backref=database.backref('movies', lazy='dynamic'), 
-        lazy='dynamic'
+        lazy='select'
     )
 
     # Corecție Relații: Trecem la back_populates
