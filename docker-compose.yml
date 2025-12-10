@@ -19,6 +19,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       SECRET_KEY: ${APP_SECRET_KEY}
+      OMDB_API_KEY: ${OMDB_API_KEY}
     volumes:
       - .:/usr/src/app  # Mount current directory to /usr/src/app in the container
     ports:

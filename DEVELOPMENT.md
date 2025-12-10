@@ -2,9 +2,11 @@
 
 This document outlines the essential commands for setting up and working with the Dockerized environment locally. Since we are **not** using a centralized Docker Registry (Docker Hub), every collaborator must perform the initial build.
 
-## 0. ⚙️ Before setup note
+## 0. ⚙️ Before setup
 
-Before starting the setup you need to create the .env file with contents: `APP_SECRET_KEY`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_URL`.
+Before starting the setup, you need to configure the environment variables.
+1. Copy the provided `.env.example` file to a new file named `.env` in the project root directory.
+2. Open the `.env` file and fill in the appropriate values for your local setup.
 
 ## 1. 🚀 Initial Setup: Build & Run
 
@@ -13,7 +15,7 @@ Run this command **once** when starting the project for the first time, or whene
 This process handles the large dependencies and ensures the server is running in the background.
 
 ```bash
-make detached_build
+make build_project
 ```
 
 ### 🛠️ Alternative: Interactive Build (Debug Mode)
@@ -21,7 +23,7 @@ make detached_build
 If you are encountering errors during the build process or startup and need to **see the logs in real-time in your terminal**, use this command instead of the one above:
 
 ```bash
-make build
+make build_with_live_logs
 ```
 
 **Note**: This runs in the foreground. Pressing `Ctrl+C` will stop the application.
@@ -34,6 +36,18 @@ Run this command exactly once:
 
 ```bash
 make database
+```
+
+**Note**: If you want to update movie metadata (posters, ratings) later without resetting the entire database, you can run the update script separately:
+
+```bash
+make update_movies
+```
+
+**Note**: If you want to scan your CSV files (`movies.csv` and `movies_without_poster.csv`) and automatically remove any duplicate entries:
+
+```bash
+make remove_csv_duplicates
 ```
 
 ## 3. 🌐 Access the Application
