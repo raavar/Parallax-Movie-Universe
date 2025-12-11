@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Setări Cont{% endblock %}
+{% block title %}Account Settings{% endblock %}
 
 {% block content %}
     <div class="container settings-page">
-        <h1>Setări Cont</h1>
+        <h1>Account Settings</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -15,7 +15,9 @@
 
         <div class="row">
             <div class="col-md-6">
-                <h2>Actualizare Profil</h2>
+                <div class="filter-heading-container">
+                    <h4 class="filter-heading">Update Profile</h4>
+                </div>
                 <form method="POST" action="{{ url_for('settings') }}" novalidate>
                     {{ profile_form.hidden_tag() }}
                     
@@ -36,13 +38,15 @@
                     </div>
                     
                     <div class="form-group">
-                        {{ profile_form.submit(class="btn btn-primary") }}
+                        {{ profile_form.submit(class="btn btn-settings") }}
                     </div>
                 </form>
             </div>
             
             <div class="col-md-6">
-                <h2>Schimbă Parola</h2>
+                <div class="filter-heading-container">
+                    <h4 class="filter-heading">Change Password</h4>
+                </div>
                 <form method="POST" action="{{ url_for('settings') }}" novalidate>
                     {{ password_form.hidden_tag() }}
                     
@@ -71,7 +75,7 @@
                     </div>
                     
                     <div class="form-group">
-                        {{ password_form.submit(class="btn btn-warning") }}
+                        {{ password_form.submit(class="btn btn-settings") }}
                     </div>
                 </form>
             </div>

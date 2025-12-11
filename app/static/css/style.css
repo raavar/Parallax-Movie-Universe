@@ -632,6 +632,43 @@ h2, h3 {
 .user-actions-panel { width: 100%; }
 .w-100 { width: 100% !important; }
 
+/* Asigură că butoanele sunt centrate în div-ul lor părinte */
+.settings-page .form-group.text-center {
+    text-align: center;
+}
+
+/* Stil pentru butoanele de acțiune mici */
+.btn-settings {
+    /* Mărimi */
+    width: 200px; /* Lățime fixă mai mică */
+    padding: 10px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    
+    /* Culori și aspect */
+    background-color: #f7cdd0; /* Roșu de accent */
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px; 
+    
+    /* Centrare (asigură că funcționează dacă părintele nu e text-center) */
+    display: block; 
+    margin: 15px auto 10px auto;
+    margin-bottom: 100px;
+    
+    /* Efect Hover/Focus */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-settings:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
 /* Buton Watchlist */
 .btn-warning {
     background-color: #DC3551; 
@@ -747,9 +784,9 @@ h2, h3 {
     text-align: center;
     color: #f7cdd0
 }
-.form-group { margin-bottom: 20px; }
+.form-group { margin-bottom: 20px; color: #f7cdd0;}
 .form-group label { display: block; margin-bottom: 7px; font-weight: bold; }
-.form-group input {
+.form-group input:not([type="submit"]):not([type="reset"]):not([type="button"]) {
     margin-top: 10px;
     margin-bottom: 10px;
     width: 100%;

@@ -5,29 +5,28 @@ from app.models import User # Asigură-te că User este importat corect
 
 # --- Formular de Actualizare Profil ---
 class UpdateProfileForm(FlaskForm):
-    username = StringField('Nume Utilizator', 
+    username = StringField('Username', 
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', 
                         validators=[DataRequired(), Email()])
-    submit = SubmitField('Actualizează Profilul')
-
+    submit = SubmitField('Update Profile')
     # Metoda de validare personalizată pentru a evita duplicarea numelui de utilizator/email
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user and user.id != self.original_user_id:
-            raise ValidationError('Acest nume de utilizator este deja folosit.')
+            raise ValidationError('This username is already taken.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user and user.id != self.original_user_id:
-            raise ValidationError('Acest email este deja folosit.')
+            raise ValidationError('This email is already taken.')
 
-# --- Formular de Schimbare Parolă ---
+# --- Change Password Form ---
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Parola Actuală', 
+    old_password = PasswordField('Current Password', 
                                  validators=[DataRequired()])
-    new_password = PasswordField('Parola Nouă', 
+    new_password = PasswordField('New Password', 
                                  validators=[DataRequired(), Length(min=6)])
-    confirm_new_password = PasswordField('Confirmă Parola Nouă', 
+    confirm_new_password = PasswordField('Confirm New Password', 
                                          validators=[DataRequired(), EqualTo('new_password')])
-    submit = SubmitField('Schimbă Parola')
+    submit = SubmitField('Change Password')
