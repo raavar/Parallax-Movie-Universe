@@ -44,7 +44,21 @@ make database
 make update_movies
 ```
 
-**Note**: If you want to scan your CSV files (`movies.csv` and `movies_without_poster.csv`) and automatically remove any duplicate entries:
+**Note**: If you have **new movie** data prepared, you can add it in `database/movies_to_add.csv`, and use this command to safely integrate it into the main `movies.csv` file.
+
+This script ensures:
+
+- *Uniqueness*: It prevents duplicates in `movies.csv`.
+
+- *Blacklisting*: It skips movies that are already marked as unserviceable in `blacklist.csv`.
+
+- *Consumption*: It empties `movies_to_add.csv` after the successful merge.
+
+```bash
+make add_new_movies_to_local_database
+```
+
+**Note**: If you want to scan your CSV files (`movies.csv` and `blacklist.csv`) and automatically remove any duplicate entries:
 
 ```bash
 make remove_csv_duplicates

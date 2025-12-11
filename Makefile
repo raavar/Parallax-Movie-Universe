@@ -1,4 +1,4 @@
-.PHONY: build_project build_with_live_logs database update_movies remove_csv_duplicates start stop restart logs clean
+.PHONY: build_project build_with_live_logs database create_global_server update_movies add_new_movies_to_local_database remove_csv_duplicates start stop restart logs clean
 
 build_project:
 	@echo "Building and starting Docker containers in detached mode..."
@@ -34,6 +34,11 @@ update_movies:
 	@echo "Updating movie metadata..."
 	docker compose run --rm web python3 database/update_metadata.py
 	@echo "Movie metadata update complete."
+
+add_new_movies_to_local_database:
+	@echo "Adding new movies to the local database..."
+	docker compose run --rm web python3 database/add_new_movies.py
+	@echo "New movies added to the local database."
 
 remove_csv_duplicates:
 	@echo "Removing duplicate entries from movies.csv and movies_without_poster.csv..."
