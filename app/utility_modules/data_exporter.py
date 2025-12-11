@@ -4,20 +4,20 @@ from flask import make_response
 
 def export_movie_list_to_csv(data_list, filename="movie_export.csv"):
     """
-    Converște o listă de obiecte ORM (ex: SeenList, ToWatchList) într-un răspuns CSV.
-    Datele sunt formatate într-un fișier descărcabil.
+    Converts a list of ORM objects (e.g., SeenList, ToWatchList) into a CSV response.
+    The data is formatted into a downloadable file.
     
-    :param data_list: Lista de obiecte (de obicei SeenList sau ToWatchList)
-    :param filename: Numele fișierului de descărcat
-    :return: Răspuns Flask (Response object) cu datele CSV
+    :param data_list: List of objects (usually SeenList or ToWatchList)
+    :param filename: The name of the file to download
+    :return: Flask Response object with CSV data
     """
     if not data_list:
         data = [{"Message": "Nu au fost găsite date pentru export."}]
     else:
         data = []
         for item in data_list:
-            # Asigurăm că relația 'movie' este disponibilă (definiți relația 'backref' în models.py)
-            movie = item.movie # Presupunem o relație definită sau încercăm item.movie
+            # Ensure the 'movie' relationship is available (define 'backref' in models.py)
+            movie = item.movie # Assume a defined relationship or try accessing item.movie
             
             movie_data = {
                 'ID Film': item.movie_id,
@@ -27,14 +27,14 @@ def export_movie_list_to_csv(data_list, filename="movie_export.csv"):
             }
             data.append(movie_data)
 
-    # Creează un DataFrame Pandas
+    # Create a Pandas DataFrame
     df = pd.DataFrame(data)
 
-    # Salvează în CSV într-un buffer in-memory (StringIO)
+    # Save to CSV in an in-memory buffer (StringIO)
     csv_buffer = StringIO()
     df.to_csv(csv_buffer, index=False)
     
-    # Creează răspunsul Flask pentru descărcare
+    # Create the Flask response for download
     response = make_response(csv_buffer.getvalue())
     response.headers["Content-Disposition"] = f"attachment; filename={filename}"
     response.headers["Content-type"] = "text/csv"
