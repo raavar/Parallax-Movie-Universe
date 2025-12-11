@@ -203,6 +203,22 @@ body {
     transform: translateY(-2px);
 }
 
+.nav-btn.btn-login:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
+.nav-btn.btn-register:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
 /* DROPDOWN PROFIL */
 .user-dropdown {
     position: relative; 
@@ -288,7 +304,20 @@ body {
     margin: 0 auto;
 }
 
-h1, h2, h3 {
+h1 {
+    font-family: 'Bebas Neue', sans-serif; 
+    font-size: 4.5rem; 
+    color: #DC3551; 
+    margin-top: 20px;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    border-bottom: none; /* Scoate linia default */
+    text-align: center;
+}
+
+h2, h3 {
     color: #f0f0f0;
     border-bottom: 1px solid #333;
     padding-bottom: 5px;
@@ -314,10 +343,19 @@ h1, h2, h3 {
     cursor: pointer;
     font-weight: bold;
     margin-right: 10px;
+    transition: all 0.3s ease; 
 }
-.btn-primary { background-color: #4CAF50; color: white; }
+.btn-primary { background-color: #f7cdd0; color: #1a1a1a; }
 .btn-secondary { background-color: #555; color: white; }
-.btn-success { background-color: #007bff; color: white; }
+.btn-success { background-color: #f7cdd0; color: #1a1a1a; }
+
+.btn:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
 
 /* ======================================================= */
 /* GRID CATALOG (Carduri Verticale) */
@@ -520,6 +558,8 @@ h1, h2, h3 {
     color: #f7cdd0 !important; /* Alb */
     text-decoration: none;
     transition: color 0.2s ease;
+    align-items: center;
+    text-align: center;
 }
 
 .movie-card-content h3 a:hover {
@@ -636,12 +676,35 @@ h1, h2, h3 {
 }
 
 /* FILTRE (Catalog) */
-.filter-heading {
-    color: #DC3551;
-    font-size: 1.1em;
-    font-weight: bold;
-    margin-bottom: 10px;
+.filter-heading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0; 
 }
+
+.filter-heading {
+    font-size: 1.5rem;          
+    font-weight: 700px;         
+    color: #f7cdd0;           
+    padding: 0 20px;          
+    text-transform: none;     
+    margin: 0;                
+    white-space: nowrap;
+    text-decoration: none !important;
+    border-bottom: none !important;
+}
+
+.filter-heading-container::before,
+.filter-heading-container::after {
+    content: "";
+    flex-grow: 1;             
+    height: 1px;              
+    background-color: #f7cdd0;   
+    opacity: 0.5;             
+}
+
 .genre-tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -682,21 +745,34 @@ h1, h2, h3 {
     background-color: #1f1f1f;
     border-radius: 8px;
     text-align: center;
+    color: #f7cdd0
 }
 .form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group label { display: block; margin-bottom: 7px; font-weight: bold; }
 .form-group input {
+    margin-top: 10px;
+    margin-bottom: 10px;
     width: 100%;
+    height: 50px;
     padding: 10px;
     background-color: #2a2a2a;
-    border: 1px solid #333;
+    border: 1px solid #DC3551;
     color: #f0f0f0;
     border-radius: 4px;
     box-sizing: border-box;
 }
+.checkbox-group {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
 .btn-full-width { width: 100%; margin-top: 10px; padding: 12px; font-size: 1.1em; }
 .auth-footer { margin-top: 20px; padding-top: 15px; border-top: 1px solid #333; }
-.auth-footer a { color: #4CAF50; }
+.auth-footer a { color: #DC3551; }
 
 /* --- Titlu Centrat între Linii (Homepage) --- */
 .recommendation-heading-container {
@@ -727,6 +803,95 @@ h1, h2, h3 {
     background-color: #f7cdd0;   
     opacity: 0.5;             
 }
+
+/* Genuri (Butoane) */
+.genre-tags-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.btn-clear-accent {
+    /* Stil implicit: Chenar roșu, fundal transparent */
+    background-color: transparent !important;
+    border: 1px solid #DC3551 !important;
+    color: #DC3551 !important;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 6px 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-clear-accent:hover {
+    /* Stil la hover: Fundal roșu complet */
+    background-color: #DC3551 !important;
+    color: white !important;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-1px); /* Mic efect de ridicare */
+}
+
+.btn-tag {
+    background-color: #1f1f1f; 
+    color: #ccc;
+    border: 1px solid #333;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-tag:hover {
+    background-color: #DC3551;
+    color: white;
+    border-color: #DC3551;
+    transform: translateY(-2px);
+}
+
+.btn-tag-selected {
+    background-color: #DC3551;
+    border-color: #DC3551;
+    color: white;
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+}
+
+/* Zona Controalelor (Year & Sort) */
+.controls-wrapper {
+    background-color: #1a1a1a; 
+    padding: 15px 30px;
+    border-radius: 15px;
+    border: 1px solid #2a2a2a;
+    width: 100%;
+    max-width: 900px;
+    display: flex; /* CRITIC */
+    justify-content: space-between; /* CRITIC: Împinge la capete */
+    align-items: center;
+    font-weight: bold;
+}
+
+/* Butonul Apply */
+.btn-apply {
+    background-color: #DC3551;
+    border: none;
+    font-weight: bold;
+}
+.btn-apply:hover {
+    background-color: #b02a40;
+}
+
+/* Stiluri pentru input-uri și select-uri */
+.dark-input {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: bold;
+}
+
+
+/* Catalog Pagination */
 
 .custom-pagination {
     list-style: none; 
@@ -819,4 +984,87 @@ h1, h2, h3 {
     background-color: #222; /* Fundalul rămâne la culoarea dezactivată */
     border-color: #333;
     color: #666;
+}
+
+/* 1. Stilul de bază al butonului */
+.btn-details-3d {
+    /* Setări de bază */
+    padding: 12px 15px;
+    font-size: 1em;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    display: block; 
+    text-align: center;
+
+    /* Colțuri rotunjite (CERC) */
+    border-radius: 50px !important;
+    
+    /* Culori și fundal */
+    background-color: #333333; 
+    color: #f0f0f0;
+    border: none;
+}
+
+.btn-details-3d:hover {
+    background-color: #DC3551; 
+    color: white;
+    box-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.5),     
+        -2px -2px 4px rgba(64, 64, 64, 0.4); 
+    transform: scale(0.98); 
+}
+
+/* 3. Ajustări pentru a centra butonul în card */
+/* Vom folosi o margine orizontală automată pentru a-l centra */
+.movie-card-content {
+    padding: 15px;
+    
+    display: flex; /* Activează Flexbox */
+    flex-direction: column; 
+    
+    align-items: center; /* CRITIC: Centrează toate elementele pe orizontală (inclusiv butonul) */
+    text-align: center; /* Centrează textul în interiorul elementelor */
+    
+    flex-grow: 1;
+}
+
+/* Stil pentru Titlu (Asigură că se aliniază la centru) */
+.movie-card h3 {
+    text-align: center; /* Asigură că titlul în sine este centrat */
+    /* ... (alte stiluri H3 rămân la fel) ... */
+}
+
+/* Stil pentru rândul de Genuri (Pentru a le centra ca bloc) */
+.genres-row { 
+    margin-bottom: 10px; 
+    display: flex;
+    justify-content: center; /* Centrează tag-urile de genuri */
+    flex-wrap: wrap; 
+}
+
+/* Stil pentru Descriere */
+.description {
+    text-align: center;
+    /* ... (alte stiluri description rămân la fel) ... */
+}
+
+.movie-card .btn-details-3d {
+    margin-top: 15px;
+    margin-bottom: 5px; 
+    
+    /* Setăm o lățime vizuală (poți ajusta asta) */
+    width: 70%; 
+    
+    /* Deoarece părintele are align-items: center, margin: auto nu mai este necesar.
+       Dar îl lăsăm pentru a preveni alte conflicte. */
+    margin-left: auto;
+    margin-right: auto;
+    
+    display: block; 
+    border-radius: 50px !important;
+    
+    /* Reaplică umbrele 3D */
+    box-shadow: 
+        6px 6px 12px rgba(0, 0, 0, 0.5);
 }
