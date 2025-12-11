@@ -60,7 +60,7 @@ def populate_movies_from_csv():
     print("--- Populating Movies and Genres from CSV ---")
 
     # Construct full path to the CSV file
-    csv_file_path = os.path.join(current_dir, 'movies.csv')
+    csv_file_path = os.path.join(current_dir, 'csv', 'movies.csv')
 
     with app.app_context():
         # Ensure tables are created (including Movie, Genre, and the association table)
