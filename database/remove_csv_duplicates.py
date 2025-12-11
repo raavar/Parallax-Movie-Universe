@@ -69,7 +69,7 @@ def clean_csv_duplicates(filename, unique_column='title', delimiter=';'):
 
 if __name__ == "__main__":
     # Clean the main movie database file
-    clean_csv_duplicates('movies.csv', unique_column='title')
+    clean_csv_duplicates('csv/movies.csv', unique_column='title')
     
     # Clean the list of removed movies (if it exists)
-    clean_csv_duplicates('movies_without_poster.csv', unique_column='title')
+    clean_csv_duplicates('csv/blacklist.csv', unique_column='title')

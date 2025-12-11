@@ -14,7 +14,7 @@ from app.models import Movie
 
 # Setup paths for CSV files
 CSV_FILE_PATH = os.path.join(current_dir, 'movies.csv')
-REMOVED_CSV_PATH = os.path.join(current_dir, 'movies_without_poster.csv')
+REMOVED_CSV_PATH = os.path.join(current_dir, 'blacklist.csv')
 
 # Get OMDB API key from environment variable
 OMDB_API_KEY = os.environ.get('OMDB_API_KEY')
@@ -88,7 +88,7 @@ def handle_csv_changes(titles_to_remove):
         print("Error: movies.csv not found. Cannot update CSV files.")
         return
 
-    # 2. Append removed movies to movies_without_poster.csv
+    # 2. Append removed movies to blacklist.csv
     file_exists = os.path.isfile(REMOVED_CSV_PATH)
     with open(REMOVED_CSV_PATH, mode='a', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=';')
