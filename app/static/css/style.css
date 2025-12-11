@@ -1105,3 +1105,155 @@ h2, h3 {
     box-shadow: 
         6px 6px 12px rgba(0, 0, 0, 0.5);
 }
+
+/* ======================================================= */
+/* STILURI PAGINĂ PROFIL (Profile/user_profile.html) */
+/* ======================================================= */
+
+/* Titlu Principal (Ex: "PROFILUL UTILIZATORULUI: ALE14") */
+.profile-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: #DC3551;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    letter-spacing: 2px;
+    padding-bottom: 10px;
+    text-transform: uppercase;
+}
+
+/* Sub-titluri (Ex: "Codul QR al Profilului", "Liste Mele") */
+
+.profile-section-heading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0; 
+}
+
+.profile-section-heading {
+    font-size: 2rem;          
+    font-weight: 700;         
+    color: #f7cdd0;           
+    padding: 0 20px;          
+    text-transform: none;     
+    margin: 0;                
+    white-space: nowrap;
+    text-decoration: none !important;
+    border-bottom: none !important;   
+}
+
+.profile-section-heading-container::before,
+.profile-section-heading-container::after {
+    content: "";
+    flex-grow: 1;             
+    height: 1px;              
+    background-color: #f7cdd0;   
+    opacity: 0.5;             
+}
+
+/* Informații generale (Email) */
+.profile-info {
+    font-size: 3rem;
+    font-weight: 700; 
+    color: #f7cdd0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+.profile-info span {
+    font-weight: bold;
+    color: #f0f0f0;
+}
+
+/* Container pentru QR Code */
+.qr-container {
+    padding: 20px;
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 8px;
+    /* STILURI CRITICE PENTRU CENTRARE: */
+    display: block; /* 1. Asigură-te că este un element de tip bloc */
+    width: fit-content; /* 2. Asigură că lățimea se ajustează la conținut (la QR code) */
+    margin-left: auto; /* 3. Centrează pe orizontală */
+    margin-right: auto;
+    /* Sfârșitul stilurilor de centrare */
+    
+    margin-top: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.export-buttons-container {
+    display: flex !important;
+    justify-content: center !important; /* Asigură că spațiul dintre ele este gestionat */
+    margin: 20px 0 !important; 
+    padding: 0 !important;
+    
+    /* Păstrează spațiul dintre butoane */
+    gap: 15px; 
+    
+    /* Asigură că nu plutesc și nu sunt influențate de alinierea textului */
+    float: none !important;
+}
+
+/* Stil pentru Butoanele de Export (Ex: "Descarcă Lista Văzute (CSV)") */
+.btn-export {
+    /* Mărimi */
+    font-weight: bold;
+    
+    /* Culori și aspect */
+    background-color: #f7cdd0; /* Roșu de accent */
+    color: #1a1a1a;
+    border: none;
+    border-radius: 8px; 
+    float: none !important;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.2s, transform 0.2s;
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    display: inline-block;
+    align-items: center;
+}
+
+.btn-export:hover {
+    background-color: #DC3551; 
+    border-color: #DC3551;
+    color: #f7cdd0; 
+    box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Stil pentru listele Văzute / De Văzut (Dacă sunt afișate ca liste simple) */
+.user-lists-item {
+    padding: 10px 0;
+    color: white;
+    font-size: 1em;
+}
+.user-lists-item:last-child {
+    border-bottom: none;
+}
+.user-lists-item span {
+    color: white;
+    font-weight: bold;
+}
+
+.user-list-items li a {
+    /* Culoarea implicită (Albastru standard pentru link, dar închis) */
+    color: #f7cdd0 !important; /* Albastru-Violet deschis (pentru contrast) */
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.user-list-items li a:hover {
+    /* Culoarea la hover (Roșu de accent) */
+    color: #DC3551 !important; 
+    text-decoration: underline; /* Adaugă subliniere la hover */
+}
