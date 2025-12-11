@@ -709,6 +709,7 @@ h2, h3 {
     font-weight: bold;
     padding: 8px 0;
     text-align: center;
+    margin-top: 10px;
 }
 .avg-rating-global-badge strong {
     color: #DC3551; /* Galben auriu pentru scor */
@@ -762,7 +763,7 @@ h2, h3 {
     font-size: 1.1em;
     color: #ccc;
     padding-bottom: 20px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid rgba(247, 205, 208, 0.5);
     margin-bottom: 30px;
 }
 
@@ -775,12 +776,35 @@ h2, h3 {
     border-bottom: none;
     padding-bottom: 0;
 }
-.section-title-small {
-    color: #f7cdd0;
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
+
+.section-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0; 
     margin-top: 50px;
+}
+
+.section-title-small {
+    font-size: 2rem;          
+    font-weight: 700;         
+    color: #f7cdd0;           
+    padding: 0 20px;          
+    text-transform: none;     
+    margin: 0;                
+    white-space: nowrap;
+    text-decoration: none !important;
+    border-bottom: none !important;  
+}
+
+.section-title-container::before,
+.section-title-container::after {
+    content: "";
+    flex-grow: 1;             
+    height: 1px;              
+    background-color: #f7cdd0;   
+    opacity: 0.5;             
 }
 
 .movie-details-content {
@@ -843,7 +867,7 @@ h2, h3 {
 .star:hover,
 .star.selected,
 .star.hovered {
-    color: #FFD700; /* Galben auriu */
+    color: #DC3551; /* Galben auriu */
 }
 
 /* Efect mic la hover/click */
@@ -898,42 +922,71 @@ h2, h3 {
     z-index: 10;
 }
 
+.btn-remove-rating {
+    background-color: transparent !important; /* Gri închis */
+    color: #DC3551 !important; /* Text roșu */
+    border: 1px solid #DC3551 !important;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.btn-remove-rating:hover {
+    background-color: #DC3551 !important; /* Roșu la hover */
+    color: #f7cdd0 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 81, 0.5);
+    transform: translateY(-1px);
+}
+
 /* === Butoane Acțiuni === */
 
 /* Watchlist (Roșu) */
 .btn-action-primary, .btn-action-checked {
-    background-color: #DC3551 !important; 
-    border-color: #DC3551 !important;
-    color: white !important;
+    background-color: #f7cdd0 !important; 
+    border-color: #f7cdd0 !important;
+    color: #1a1a1a !important;
     font-weight: bold;
     border-radius: 8px;
     transition: all 0.2s ease;
+    margin-top: 25px;
 }
 .btn-action-primary:hover {
-    background-color: #b02a40 !important;
+    background-color: #DC3551 !important;
+    color: #f7cdd0 !important;
 }
 .btn-action-checked {
-    background-color: #b02a40 !important;
+    background-color: #DC3551 !important;
     color: #f7cdd0 !important;
 }
 
 /* Seen (Gri/Secundar) */
 .btn-action-seen {
-    background-color: #333 !important; 
-    color: #00bcd4 !important; /* Culoare diferită pentru Văzut */
-    border: 1px solid #00bcd4 !important;
+    background-color: #222 !important; 
+    color: #DC3551 !important; /* Culoare diferită pentru Văzut */
+    border: 1px solid #DC3551 !important;
     font-weight: bold;
     border-radius: 8px;
+    margin-top: 25px;
 }
 .btn-action-seen:hover {
-    background-color: #444 !important;
+    background-color: #222 !important;
 }
 .btn-action-default {
     background-color: transparent !important;
-    color: #999 !important;
-    border: 1px solid #999 !important;
+    color: #DC3551 !important;
+    border: 1px solid #DC3551 !important;
     font-weight: bold;
     border-radius: 8px;
+    margin-top: 25px;
+}
+
+.btn-action-default:hover {
+    background-color: #DC3551 !important; /* Roșu la hover */
+    color: #f7cdd0 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 81, 0.5);
+    transform: translateY(-1px);
 }
 
 /* === Secțiunea Rating === */
@@ -944,12 +997,13 @@ h2, h3 {
 }
 
 .current-hover-score {
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: bold;
     color: #DC3551; /* Roșu de accent */
     min-width: 40px; /* Asigură un spațiu constant pentru scor */
     text-align: center;
     transition: color 0.1s ease;
+    gap: 10px;
 }
 
 /* Ajustăm label-ul pentru a se centra (dacă nu era deja) */
@@ -960,23 +1014,24 @@ h2, h3 {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
+    gap: 10px;
 }
 
 .current-rating {
     font-size: 1.1em;
     color: #ccc;
 }
-.current-rating strong {
-    color: #FFD700; /* Rating-ul curent al utilizatorului */
-}
+
 .btn-rating {
-    background-color: #4CAF50 !important;
-    border-color: #4CAF50 !important;
+    background-color: #f7cdd0 !important;
+    border-color: #f7cdd0 !important;
+    color: #1a1a1a !important;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 .btn-rating:hover {
-    background-color: #388e3c !important;
+    background-color: #DC3551 !important;
+    color: #f7cdd0 !important;
 }
 
 /* Asigură că butoanele sunt centrate în div-ul lor părinte */

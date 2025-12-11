@@ -16,7 +16,7 @@
                 {% if movie.imdb_rating %}
                     <div class="critic-rating-badge text-dark">
                         <i class="fas fa-star-half-alt"></i> 
-                        <strong>Critic:</strong> {{ movie.imdb_rating }}
+                        <strong>Critic Rating:</strong> {{ movie.imdb_rating }}
                     </div>
                 {% endif %}
             </div>
@@ -35,16 +35,18 @@
                         <p class="mt-2">No Image</p>
                     </div>
                 {% endif %}
+                <div class="left-side-info mt-4 p-3 rounded shadow-sm">
+                    {% if avg_rating is not none %}
+                    <div class="avg-rating-global-badge">
+                        Global Rating: <strong>{{ "%.1f" | format(avg_rating) }} / 10</strong>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
             
             <div class="col-md-8 movie-details-content">
                 
                 <p class="movie-description-detail">{{ movie.description }}</p>
-                {% if avg_rating is not none %}
-                    <div class="avg-rating-global-badge">
-                        Global Rating: <strong>{{ "%.1f" | format(avg_rating) }} / 10</strong>
-                    </div>
-                {% endif %}
                 {% if current_user.is_authenticated %}
                     
                     <div class="user-actions-panel mb-4">
@@ -58,9 +60,9 @@
                                     <div class="d-flex justify-content-center align-items-center">
                                         <span>
                                             {% if is_in_watchlist %}
-                                                <i class="fas fa-check"></i> În Watchlist
+                                                <i class="fas fa-check"></i> In Watchlist
                                             {% else %}
-                                                <i class="fas fa-plus"></i> Adaugă în Watchlist
+                                                <i class="fas fa-plus"></i> Add to Watchlist
                                             {% endif %}
                                         </span>
                                     </div>
@@ -73,9 +75,9 @@
                                         class="btn btn-lg w-100 btn-action-secondary {% if is_seen %}btn-action-seen{% else %}btn-action-default{% endif %}">
                                     <i class="fas fa-eye"></i> 
                                     {% if is_seen %}
-                                        Scoatere de la Văzute
+                                        Watched
                                     {% else %}
-                                        Marcare ca Văzut
+                                        Mark as watched
                                     {% endif %}
                                 </button>
                             </form>
@@ -84,16 +86,19 @@
                     
                     {# 3. SECȚIUNE RATING #}
                     <div id="ratingSection" class="rating-box mt-4 p-3 w-100">
-                         <h3 class="section-title-small">Rate Movie</h3>
+                         <div class="section-title-container">
+                            <h2 class="section-title-small">Rate Movie</h2>
+                        </div>
 
                         <form method="POST" action="{{ url_for('rate_movie', movie_id=movie.id) }}" id="ratingForm" class="w-100 d-flex flex-column align-items-center">
+                            
                             <label for="score" class="form-label d-flex justify-content-center align-items-center mb-4">
-                                Rating-ul tău: 
+                                Your Rating: 
                                 <span id="dynamicScoreDisplay" class="ms-3 current-hover-score">
-                                    {{ user_rating or 0 }}/10
+                                    <strong>{{ user_rating or 0 }} / 10</strong>
                                 </span>
                             </label>
-                            
+
                             <div class="star-rating mb-3" data-current-score="{{ user_rating or 0 }}">
                                 {% for i in range(1, 11) %}
                                     <span class="star" data-score="{{ i }}">
@@ -105,93 +110,90 @@
                             <input type="hidden" name="score" id="scoreInput" value="{{ user_rating or 0 }}" required>
 
                             <button type="submit" class="btn btn-primary btn-rating w-100">
-                                {{ 'Actualizează' if user_rating else 'Trimite Rating' }} 
+                                {{ 'Update Rating' if user_rating else 'Submit Rating' }} 
                             </button>
                         </form>
                         
                         {% if user_rating %}
-                            <p class="current-rating mt-2">Evaluarea ta curentă: <strong>{{ user_rating }}/10</strong></p>
-                        {% elif is_seen %}
-                            <p class="current-rating mt-2 text-muted">Marchezi filmul ca văzut, dar nu ai oferit rating.</p>
+                            <form method="POST" action="{{ url_for('remove_rating', movie_id=movie.id) }}" class="mt-2 w-100">
+                                <button type="submit" class="btn btn-sm w-100 btn-remove-rating">
+                                    <i class="fas fa-times-circle"></i> Remove Rating
+                                </button>
+                            </form>
                         {% endif %}
                     </div>
 
                 {% else %}
-                    <p class="alert alert-warning">Vă rugăm să vă autentificați pentru a adăuga filme în liste și pentru a oferi rating-uri.</p>
+                    <p class="alert alert-warning">Please log in to add movies to lists and to provide ratings.</p>
                 {% endif %}
             </div>
         </div>
     </article>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const starRatingContainer = document.querySelector('.star-rating');
-            const stars = starRatingContainer ? starRatingContainer.querySelectorAll('.star') : [];
-            const scoreInput = document.getElementById('scoreInput');
-            const dynamicScoreDisplay = document.getElementById('dynamicScoreDisplay'); // NOU: Scorul dinamic
-            
-            // Scorul inițial (din baza de date)
-            const initialScore = parseInt(starRatingContainer.dataset.currentScore) || 0;
+document.addEventListener('DOMContentLoaded', function() {
+    const starRatingContainer = document.querySelector('.star-rating');
+    const stars = starRatingContainer ? starRatingContainer.querySelectorAll('.star') : [];
+    const scoreInput = document.getElementById('scoreInput');
+    const dynamicScoreDisplay = document.getElementById('dynamicScoreDisplay'); 
+    
+    const initialScore = parseInt(starRatingContainer.dataset.currentScore) || 0;
 
-            // Funcție pentru a actualiza vizualizarea scorului (steluțe și text)
-            function updateScoreVisual(score, isHover) {
-                // 1. Steluțele mici
-                stars.forEach(star => {
-                    const starScore = parseInt(star.dataset.score);
-                    // Dacă scorul este mai mare, aplicăm clasa
-                    if (starScore <= score) {
-                        star.classList.add(isHover ? 'hovered' : 'selected');
-                        star.classList.remove(isHover ? 'selected' : 'hovered');
-                    } else {
-                        star.classList.remove('selected', 'hovered');
-                    }
-                });
-                
-                // 2. Afișajul scorului dinamic
-                if (dynamicScoreDisplay) {
-                    dynamicScoreDisplay.textContent = `${score}/10`;
-                }
+    // Funcție pentru a actualiza vizualizarea scorului (steluțe și text)
+    function updateScoreVisual(score, isHover) {
+        // 1. Steluțele mici
+        stars.forEach(star => {
+            const starScore = parseInt(star.dataset.score);
+            if (starScore <= score) {
+                star.classList.add(isHover ? 'hovered' : 'selected');
+                star.classList.remove(isHover ? 'selected' : 'hovered');
+            } else {
+                star.classList.remove('selected', 'hovered');
             }
-
-            // Funcție pentru a reseta vizualizarea la scorul selectat
-            function resetVisualToSelected() {
-                stars.forEach(star => star.classList.remove('hovered'));
-                const currentSelectedScore = parseInt(scoreInput.value) || 0;
-                updateScoreVisual(currentSelectedScore, false);
-            }
-            
-            // Inițializează starea vizuală la încărcare
-            updateScoreVisual(initialScore, false);
-
-            // 1. Logica la Click (Setează scorul permanent)
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    const newScore = parseInt(this.dataset.score);
-                    scoreInput.value = newScore;
-                    
-                    // Forțează update-ul vizual
-                    updateScoreVisual(newScore, false);
-                    
-                    // Elimină starea de hover
-                    stars.forEach(s => s.classList.remove('hovered'));
-                });
-            });
-
-            // 2. Logica la Hover (Pre-vizualizare)
-            starRatingContainer.addEventListener('mouseover', function(e) {
-                if (e.target.closest('.star')) {
-                    const hoveredStar = e.target.closest('.star');
-                    const hoverScore = parseInt(hoveredStar.dataset.score);
-                    
-                    // Actualizează vizualizarea steluțelor și a textului
-                    updateScoreVisual(hoverScore, true);
-                }
-            });
-
-            // 3. Logica la Mouse Out (Revine la scorul selectat)
-            starRatingContainer.addEventListener('mouseleave', function() {
-                resetVisualToSelected();
-            });
         });
+        
+        // 2. Afișajul scorului dinamic
+        if (dynamicScoreDisplay) {
+            // MODIFICARE AICI: Adăugăm spații în șirul formatat
+            dynamicScoreDisplay.innerHTML = `<strong>${score} / 10</strong>`;
+        }
+    }
+
+    // Funcție pentru a reseta vizualizarea la scorul selectat
+    function resetVisualToSelected() {
+        stars.forEach(star => star.classList.remove('hovered'));
+        const currentSelectedScore = parseInt(scoreInput.value) || 0;
+        updateScoreVisual(currentSelectedScore, false);
+    }
+    
+    // Inițializează starea vizuală la încărcare
+    updateScoreVisual(initialScore, false);
+
+    // 1. Logica la Click (Setează scorul permanent)
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const newScore = parseInt(this.dataset.score);
+            scoreInput.value = newScore;
+            
+            updateScoreVisual(newScore, false);
+            stars.forEach(s => s.classList.remove('hovered'));
+        });
+    });
+
+    // 2. Logica la Hover (Pre-vizualizare)
+    starRatingContainer.addEventListener('mouseover', function(e) {
+        if (e.target.closest('.star')) {
+            const hoveredStar = e.target.closest('.star');
+            const hoverScore = parseInt(hoveredStar.dataset.score);
+            
+            updateScoreVisual(hoverScore, true);
+        }
+    });
+
+    // 3. Logica la Mouse Out (Revine la scorul selectat)
+    starRatingContainer.addEventListener('mouseleave', function() {
+        resetVisualToSelected();
+    });
+});
     </script>
 {% endblock %}

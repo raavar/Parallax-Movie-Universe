@@ -391,6 +391,24 @@ def rate_movie(movie_id):
     # Redirect back to the movie details page
     return redirect(url_for('movie_details', movie_id=movie_id))
 
+@app.route("/remove_rating/<int:movie_id>", methods=['POST'])
+@login_required # Presupune că folosești Flask-Login
+def remove_rating(movie_id):
+    # Găsește rating-ul existent al utilizatorului pentru filmul respectiv
+    rating_entry = Rating.query.filter_by(
+        user_id=current_user.id, 
+        movie_id=movie_id
+    ).first()
+
+    if rating_entry:
+        database.session.delete(rating_entry)
+        database.session.commit()
+        flash(f"Rating-ul tău pentru filmul a fost șters!", 'success')
+    else:
+        flash("Nu ai un rating activ pentru acest film.", 'warning')
+        
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
 # ==========================================================================================
 # Utility Routes
 # ==========================================================================================
