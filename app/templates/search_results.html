@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Rezultate Căutare{% endblock %}
+{% block title %}Search Results{% endblock %}
 
 {% block content %}
     <div class="container">
-        <h1>Rezultate Căutare</h1>
+        <h1>Search Results</h1>
         
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -14,50 +14,50 @@
         {% endwith %}
 
         {% if query %}
-            <h2 class="results-header">Căutare pentru: **"{{ query }}"** ({{ count }} rezultate)</h2>
+            <h2 class="results-header" style="text-align: center">Searched for: "{{ query }}" ({{ count }} results)</h2>
         {% else %}
-            <p>Introduceți un termen de căutare în bara de navigare pentru a găsi filme.</p>
+            <p style="text-align: center;">Enter a search term in the navigation bar to find movies.</p>
         {% endif %}
 
         {% if results %}
             <section class="movie-list-grid">
                 {% for movie in results %}
                     <div class="movie-card">
-                        <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }} ({{ movie.release_year }})</a></h3>
-                        <p class="description">{{ movie.description[:150] }}{% if movie.description|length > 150 %}...{% endif %}</p>
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="movie-poster-wrapper">
+                        {% if movie.poster_url %}
+                            <img src="{{ movie.poster_url }}" alt="Poster {{ movie.title }}" class="card-poster" loading="lazy">
+                        {% else %}
+                            <div class="card-poster-placeholder">
+                                <i class="fas fa-film"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+
+                    <div class="movie-card-content">
+                        <h3>
+                            <a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a> 
+                            <span class="year-badge">({{ movie.release_year }})</span>
+                        </h3>
                         
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-secondary" style="margin-top: 10px;">Vezi Detalii</a>
+                        {# Genurile ca tag-uri #}
+                        <p class="small text-muted genres-row">
+                            {% for genre in movie.genres[:3] %} {# Afișăm maxim 3 genuri să nu strice layout-ul #}
+                                <span class="badge bg-secondary">{{ genre.name }}</span>
+                            {% endfor %}
+                            {% if movie.genres|length > 3 %}
+                                <span class="badge bg-dark">+{{ movie.genres|length - 3 }}</span>
+                            {% endif %}
+                        </p>
+
+                        <p class="description">{{ movie.description[:80] }}{% if movie.description|length > 80 %}...{% endif %}</p>
+                        
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-sm btn-details-3d">Details</a>
                     </div>
+                </div>
                 {% endfor %}
             </section>
         {% elif query %}
-            <p class="alert alert-info">Ne pare rău, nu am găsit niciun film care să se potrivească cu termenul **"{{ query }}"**.</p>
+            <p class="alert alert-info" style="text-align: center">Sorry, no movies matched the term "{{ query }}".</p>
         {% endif %}
     </div>
-
-    <style>
-        .results-header {
-            margin-bottom: 25px;
-            font-size: 1.5em;
-        }
-        .movie-list-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .movie-card {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        }
-        .movie-card h3 {
-            margin-top: 0;
-        }
-        .movie-card .description {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 15px;
-        }
-    </style>
 {% endblock %}

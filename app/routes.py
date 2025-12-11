@@ -486,6 +486,7 @@ def search():
 
 @app.route("/search_autocomplete")
 def search_autocomplete():
+    # Autocomplete-ul așteaptă 'q' ca parametru
     query = request.args.get('q', '')
     
     if not query:
@@ -493,12 +494,16 @@ def search_autocomplete():
 
     try:
         search_term = f"%{query}%"
+        
+        # LOGICA MODIFICATĂ: Caută după title SAU description (ilike = case-insensitive LIKE)
         suggestions = Movie.query.filter(
-            Movie.title.ilike(search_term)
+            (Movie.title.ilike(search_term)) | 
+            (Movie.description.ilike(search_term)) # <--- NOU: Inclusiv descrierea
         ).limit(15).all()
 
         results = []
         for movie in suggestions:
+            # Puteți returna doar titlul, dar includerea anului ajută la identificare
             results.append({
                 'id': movie.id,
                 'title': f"{movie.title} ({movie.release_year})",
@@ -508,11 +513,9 @@ def search_autocomplete():
         return jsonify(results)
         
     except Exception as e:
-        # Log the full error
+        # În caz de eroare, returnează un array gol
         current_app.logger.error(f"Autocomplete search error: {e}") 
-        # Return an empty response for frontend (but error is in logs)
-        return jsonify([]), 500 # Return error code 500
-
+        return jsonify([]), 500
 # User Settings Section
 
 @app.route("/settings", methods=['GET', 'POST'])

@@ -22,11 +22,26 @@ body {
     z-index: 1000;
 }
 
+.navbar-left-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 15px;
+}
+
+
 .navbar-logo-img {
     height: 40px; 
     width: auto;  
     object-fit: contain;
     margin-right: 15px; /* Spațiu între logo și text */
+    flex-shrink: 0;
+    display: flex;
+}
+
+.navbar-logo-img:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s;
 }
 
 .logo {
@@ -38,7 +53,11 @@ body {
     font-weight: bold;
     color: #DC3551; 
     text-decoration: none;
-    flex: 1;
+    /* flex: 1; */
+}
+
+.logo:hover {
+    color: #9e172e; 
 }
 
 /* Containerul de link-uri din navbar (dreapta) */
@@ -83,7 +102,7 @@ body {
     border: 1px solid #444;    /* Bordură subtilă */
     border-radius: 50px;       /* Formă rotundă */
     padding: 5px 15px;         /* Spațiu interior */
-    width: 500px;              /* Lățime fixă */
+    width: 400px;              /* Lățime fixă */
     transition: all 0.3s ease;
 }
 
@@ -332,7 +351,7 @@ h2, h3 {
 .alert-success { background-color: #4CAF50; color: white; }
 .alert-danger { background-color: #f44336; color: white; }
 .alert-warning { background-color: #ff9800; color: #333; }
-.alert-info { background-color: #2196F3; color: white; }
+.alert-info { background-color: #DC3551; color: white; }
 
 /* Butoane Standard */
 .btn {
@@ -431,7 +450,7 @@ h2, h3 {
     font-weight: normal;
 }
 
-.genres-row { margin-bottom: 10px; }
+.genres-row { margin-bottom: 10px; gap: 6px; }
 
 .description {
     font-size: 0.9em;

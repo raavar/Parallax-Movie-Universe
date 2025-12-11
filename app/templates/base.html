@@ -18,14 +18,18 @@
 <body>
     <header>
         <nav class="navbar">
-            <a href="{{ url_for('home') }}" class="logo d-flex align-items-center text-decoration-none">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Parallax" class="navbar-logo-img">
-                <span class="ms-2">PARALLAX</span>
-            </a>
+            <div class="navbar-left-group d-flex align-items-center">
+                <a href="{{ url_for('home') }}" class="logo d-flex align-items-center text-decoration-none">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo Parallax" class="navbar-logo-img">
+                </a>
+                <a href="{{ url_for('catalog') }}" class="nav-btn btn-catalog">
+                    <i class="fas fa-layer-group"></i> Movies
+                </a>
+            </div>
 
             <div class="search-container">
                 <form action="{{ url_for('search') }}" method="get" class="search-box">
-                    <input type="text" name="query" id="searchBox" class="search-input" placeholder="Caută filme..." autocomplete="off">
+                    <input type="text" name="query" id="searchBox" class="search-input" placeholder="Search movies..." autocomplete="off">
                     <button type="submit" class="search-btn">
                         <i class="fas fa-search"></i>
                     </button>
@@ -35,9 +39,6 @@
             </div>
 
             <div class="nav-links">
-                <a href="{{ url_for('catalog') }}" class="nav-btn btn-catalog">
-                    <i class="fas fa-layer-group"></i> Movies
-                </a>
 
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('watchlist') }}" class="nav-btn btn-watchlist">
