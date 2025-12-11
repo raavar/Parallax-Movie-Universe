@@ -7,7 +7,7 @@ def send_confirmation_email(user_email):
     
     token = generate_confirmation_token(user_email)
     
-    # Create the verification link (points to the 'confirm_email' route we will make next)
+    # Create the verification link pointing to the confirm_email route
     confirm_url = url_for('confirm_email', token=token, _external=True)
     
     html = f"""
