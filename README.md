@@ -16,55 +16,55 @@ The core philosophy of Parallax is *Discovery*. By leveraging a custom Machine L
 
 This project is the result of a collaborative effort, combining backend engineering, frontend design, and data science.
 
-* * User Authentication System*
+* * User Authentication System
     * Implementation: Secure login and registration functionality using hashed passwords and session management.
     * Credit: *Zaharioiu Robert*
 
-* * Email Verification*
+* * Email Verification
     * Implementation: A security layer that sends confirmation emails with unique tokens upon registration to verify user identity before granting access.
     * Credit: *Panciu Andre*
 
-* * Advanced Profile Management*
+* * Advanced Profile Management
     * Implementation: User settings allowing for username updates, email changes, and password resets.
     * Credit: *Trăistaru Alexandra*
 
-* * QR-Based Profile Sharing*
+* * QR-Based Profile Sharing
     * Implementation: A social feature that generates a unique QR code for every user profile, allowing friends to instantly scan and view each other's watchlists and histories.
     * Credit: *Trăistaru Alexandra*
 
-* * Movie Database & Catalog*
+* * Movie Database & Catalog
     * Implementation: A paginated, searchable, and filterable catalog view that allows users to browse the entire movie collection by genre and release year.
     * Credit: *Zaharioiu Robert* (Core Logic) & *Trăistaru Alexandra* (UI/UX)
 
-* * AI Recommendation Engine*
+* * AI Recommendation Engine
     * Implementation: A Hybrid Machine Learning system using PyTorch. It utilizes TF-IDF for text analysis and vector space modeling for numerical features (budget, ratings) to predict and display movie suggestions on the homepage based on user ratings.
     * Credit: *Panciu Andre*
 
-* * Movie Details & Actions*
+* * Movie Details & Actions
     * Implementation: A rich detail view fetching global critic scores, posters, and descriptions. It integrates user actions: rating movies (1-10), toggling "Watchlist" status, and marking films as "Seen".
     * Credit: *Trăistaru Alexandra*
 
-* * Live Search*
+* * Live Search
     * Implementation: An interactive search bar that provides a dropdown of possible movie matches as you type. Pressing enter redirects to a full search results page.
     * Credit: *Trăistaru Alexandra*
 
-* * UI/UX Design*
+* * UI/UX Design
     * Implementation: The complete visual identity of the website, including responsive grid layouts and interactive elements.
     * Credit: *Trăistaru Alexandra*
 
-* * OMDb API Integration*
+* * OMDb API Integration
     * Implementation: A data pipeline that fetches missing metadata (Posters, IMDb Votes, Box Office, Metascore) from external APIs to enrich the local database.
     * Credit: *Panciu Andre*
 
-* * Database Architecture*
+* * Database Architecture
     * Implementation: The initial PostgreSQL schema design and SQLAlchemy models. Additional fields for ML and UI features were iteratively added by the team.
     * Credit: *Zaharioiu Robert* (Core), extended by *Panciu Andre* & *Trăistaru Alexandra*
 
-* * Docker Infrastructure*
+* * Docker Infrastructure
     * Implementation: Containerization of the application (Web, DB) using Docker and Docker Compose for consistent development environments. *Panciu Andre* implemented the Caddy reverse proxy integration.
     * Credit: *Zaharioiu Robert* & *Panciu Andre*
 
-* * Global Oracle Deployment*
+* * Global Oracle Deployment
     * Implementation: Configuration of the production environment on Oracle Cloud, including firewall management, HTTPS setup with Caddy, and live server maintenance.
     * Credit: *Panciu Andre*
 
