@@ -24,10 +24,27 @@ services:
       - .:/usr/src/app  # Mount current directory to /usr/src/app in the container
     ports:
       - "5000:5000"   # Map port 5000 of the container to port 5000 on the host
+    expose:
+      - "5000"
     depends_on:
       - db
-    # Gunicorn is run from CMD from Dockerfile
+  caddy:
+    image: caddy:latest
+    container_name: parallax_caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+  # Gunicorn is run from CMD from Dockerfile
 
 # Volume for persistent database storage even if the container is removed/closed
 volumes:
   postgres_data:
+  caddy_data:   # Stores the SSL certificates
+  caddy_config:

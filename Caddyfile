@@ -1,0 +1,3 @@
+parallax-movie-universe.ddnsfree.com {
+    reverse_proxy web:5000
+}

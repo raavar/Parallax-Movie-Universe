@@ -15,6 +15,21 @@ database:
 	docker compose run --rm web python3 database/update_metadata.py
 	@echo "Database initialization complete."
 
+create_global_server:
+	make clean
+	
+	@echo "Creating the global server accessible from everywhere..."
+	chmod +x allow_docker_database.bash
+	./allow_docker_database.bash
+
+	make build_project
+	@echo "Waiting 10 seconds for Database to initialize..."
+	@sleep 10
+	
+	make database
+	make start
+	@echo "Global server created successfully."
+
 update_movies:
 	@echo "Updating movie metadata..."
 	docker compose run --rm web python3 database/update_metadata.py
