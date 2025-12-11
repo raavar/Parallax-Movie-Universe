@@ -2,31 +2,31 @@
 
 echo "--- CONFIGURING FIREWALL ---"
 
-# 1. Flush existing rules to prevent conflicts/duplicates
+# Remove all existing firewall rules to ensure a clean slate and prevent conflicts
 sudo iptables -F
 
-# 2. Allow SSH (CRITICAL: Prevents locking yourself out)
+# Allow incoming SSH connections on port 22 to ensure remote access is maintained
 sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 
-# 3. Allow Internal Docker Traffic (Fixes 'Connection Timed Out' between Web and DB)
+# Allow internal traffic on Docker network bridges so containers can communicate with each other
 sudo iptables -I INPUT -i br+ -j ACCEPT
 sudo iptables -I FORWARD -i br+ -j ACCEPT
 sudo iptables -I FORWARD -o br+ -j ACCEPT
 
-# 4. Allow Public Web Traffic (Caddy/HTTPS)
+# Allow incoming HTTP and HTTPS traffic on ports 80 and 443 for the web server
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
 sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
 
-# 5. Allow Loopback (Internal system talk)
+# Allow traffic on the loopback interface for internal system communication
 sudo iptables -A INPUT -i lo -j ACCEPT
 
-# 6. Allow Established Connections (So the server can reply to you)
+# Allow incoming traffic for connections that are already established or related to outgoing requests
 sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# 7. Save rules
+# Save the current iptables rules to ensure they persist after a reboot
 sudo netfilter-persistent save
 
-# 8. Restart Docker to apply network bridges
+# Restart the Docker service to ensure network bridges are correctly applied with the new firewall rules
 echo "Restarting Docker service..."
 sudo systemctl restart docker
 

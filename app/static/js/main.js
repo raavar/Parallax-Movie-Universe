@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Main.js loaded!");
 
-    // 1. DROPDOWN
+    // Dropdown functionality configuration
     const dropdownButton = document.getElementById('userDropdownButton');
     const dropdownMenu = document.getElementById('userDropdownMenu');
 
@@ -20,8 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 2. AUTOCOMPLETE (Corectat)
-    // CORECȚIE: Folosim ID-ul 'searchBox' care există în HTML
+    // Autocomplete search functionality
+    // We target the 'searchBox' ID that exists in the HTML structure
     const searchInput = document.getElementById('searchBox'); 
     const resultsContainer = document.getElementById('autocompleteResults');
     let searchTimeout;
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Debounce 300ms
+            // Implement a debounce of 300ms to limit network requests
             searchTimeout = setTimeout(() => {
                 console.log("Searching for:", query);
                 fetch(`/search_autocomplete?q=${encodeURIComponent(query)}`)
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 const a = document.createElement('a');
                                 a.href = movie.url;
                                 a.textContent = movie.title;
-                                // Stiluri directe pentru siguranță
+                                // Apply direct styling for consistency
                                 a.style.display = 'block';
                                 a.style.padding = '10px 15px';
                                 a.style.color = '#ccc';
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         });
 
-        // Ascunde la click în afară
+        // Hide autocomplete results when clicking outside the search area
         document.addEventListener('click', function(e) {
             if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
                 resultsContainer.style.display = 'none';

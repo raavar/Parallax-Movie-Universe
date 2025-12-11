@@ -4,7 +4,7 @@ import time
 import requests
 import csv
 
-# Add the project root to sys.path for imports
+# Adjust the system path to include the parent directory so we can import the app module
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
@@ -12,15 +12,15 @@ sys.path.append(parent_dir)
 from app import app, database
 from app.models import Movie
 
-# Setup paths for CSV files
+# Define the file paths for the main movie dataset and the blacklist file
 CSV_FILE_PATH = os.path.join(current_dir, 'movies.csv')
 REMOVED_CSV_PATH = os.path.join(current_dir, 'blacklist.csv')
 
-# Get OMDB API key from environment variable
+# Retrieve the OMDB API key from the system environment variables
 OMDB_API_KEY = os.environ.get('OMDB_API_KEY')
 
 def parse_int(value):
-    # Helper function for number conversion (e.g., '$50M' -> 50000000).
+    # Helper function that extracts integers from strings by removing non-numeric characters
     if not value or value == 'N/A':
         return None
     clean_val = ''.join(filter(str.isdigit, value))
@@ -61,8 +61,8 @@ def fetch_movie_data_local(title, year=None):
 
 def handle_csv_changes(titles_to_remove):
     """
-    Reads the main CSV, removes the specified titles, 
-    writes them to a new CSV, and updates the main CSV.
+    Reads the main CSV file, separates the movies into kept and removed lists,
+    appends the removed items to the blacklist, and updates the main CSV file.
     """
     if not titles_to_remove:
         return
@@ -73,7 +73,7 @@ def handle_csv_changes(titles_to_remove):
     removed_rows = []
     fieldnames = []
 
-    # 1. Read the source file
+    # Read the source CSV file and split the data into kept and removed lists
     try:
         with open(CSV_FILE_PATH, mode='r', encoding='utf-8') as csv_file:
             reader = csv.DictReader(csv_file, delimiter=';') 
@@ -88,16 +88,16 @@ def handle_csv_changes(titles_to_remove):
         print("Error: movies.csv not found. Cannot update CSV files.")
         return
 
-    # 2. Append removed movies to blacklist.csv
+    # Append the data of the removed movies to the blacklist CSV file
     file_exists = os.path.isfile(REMOVED_CSV_PATH)
     with open(REMOVED_CSV_PATH, mode='a', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=';')
         if not file_exists:
-            writer.writeheader() # Write header only if file is new
+            writer.writeheader() # Write the CSV header row only if the file does not already exist
         writer.writerows(removed_rows)
     print(f"   -> Added {len(removed_rows)} rows to {os.path.basename(REMOVED_CSV_PATH)}")
 
-    # 3. Overwrite movies.csv with kept rows
+    # Overwrite the main movies CSV file with the data of the movies that remain
     with open(CSV_FILE_PATH, mode='w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=';')
         writer.writeheader()
@@ -106,7 +106,7 @@ def handle_csv_changes(titles_to_remove):
 
 
 def update_and_clean_movies():
-    titles_to_remove = set() # Store titles to remove from CSV
+    titles_to_remove = set() # Initialize a set to track the titles of movies that need to be removed from the CSV
 
     with app.app_context():
         movies = Movie.query.filter(
@@ -140,9 +140,9 @@ def update_and_clean_movies():
             
             if not got_poster:
                 print(f"   -> No poster. Deleting '{movie.title}' from DB & moving to removed list.")
-                # Add to set for CSV processing later
+                # Add the title to the list of movies to be removed from the CSV files
                 titles_to_remove.add(movie.title)
-                # Delete from DB
+                # Delete the movie record from the database
                 database.session.delete(movie)
                 deleted_count += 1
 
@@ -154,7 +154,7 @@ def update_and_clean_movies():
         database.session.commit()
         print(f"--- DB FINISHED! Updated: {updated_count} | Deleted from DB: {deleted_count} ---")
         
-        # After DB operations are done, handle the CSV files
+        # Update the CSV files if any movies were deleted from the database
         if deleted_count > 0:
             handle_csv_changes(titles_to_remove)
 
