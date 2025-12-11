@@ -269,7 +269,7 @@ def toggle_seen(movie_id):
         # ⚠️ CRITIC: Ștergem și ratingul, deoarece filmul nu mai este considerat văzut
         Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
-        flash(f'"{movie.title}" a fost scos din lista Filme Văzute și ratingul a fost șters.', 'info')
+        flash(f'"{movie.title}" was deleted from Watch History and removed from ratings.', 'info')
         status = 'removed'
     else:
         # Dacă nu este văzut, îl adăugăm la văzute
@@ -279,36 +279,11 @@ def toggle_seen(movie_id):
         # Opțional: Ștergem din Watchlist (dacă este trecut la văzute)
         # ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
-        flash(f'"{movie.title}" a fost adăugat în lista Filme Văzute.', 'success')
+        flash(f'"{movie.title}" was added to Watch History.', 'success')
         status = 'added'
 
     database.session.commit()
     return redirect(url_for('movie_details', movie_id=movie_id))
-
-# # Add to to-watch list route
-# @app.route('/add_to_watch/<int:movie_id>', methods=['POST'])
-# @login_required     # Ensure user is logged in to access this route
-# def add_to_watch(movie_id):
-#     # Logic for adding a movie to the to-watch list
-
-#     # Find the movie by ID
-#     movie = Movie.query.get_or_404(movie_id)
-
-#     # Check if the movie is already in the user's to-watch list
-#     if ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie.id).first():
-#         flash(f'"{movie.title}" is already in your to-watch list.', 'warning')
-#         return redirect(request.referrer or url_for('home'))
-
-#     # Add the movie to the current user's to-watch list
-#     new_entry = ToWatchList(user_id=current_user.id, movie_id=movie.id)
-#     database.session.add(new_entry)
-
-#     # Commit the changes to the database
-#     database.session.commit()
-
-#     # Inform the user and redirect back
-#     flash(f'Added "{movie.title}" to your to-watch list.', 'success')
-#     return redirect(request.referrer or url_for('home'))
 
 # Movie details route
 @app.route('/movie/<int:movie_id>')
@@ -427,7 +402,7 @@ def rate_movie(movie_id):
 def user_profile(user_id):
     # Asigură-te că utilizatorul își vizualizează propriul profil
     if current_user.id != user_id:
-        flash('Nu aveți permisiunea de a vizualiza acest profil.', 'danger')
+        flash('You do not have permission to view this profile.', 'danger')
         return redirect(url_for('home'))
 
     user = User.query.get_or_404(user_id)
@@ -450,13 +425,13 @@ def user_profile(user_id):
 @app.route("/export_to_watch_list", methods=['GET'])
 @login_required
 def export_to_watch_list():
-    """Exportă lista 'De Văzut' a utilizatorului curent în CSV."""
+    """Export the current user's Watchlist to CSV."""
     
     # Preluare filme din lista "De Văzut" a utilizatorului logat
     to_watch_movies = ToWatchList.query.filter_by(user_id=current_user.id).all()
     
     if not to_watch_movies:
-        flash('Lista "De Văzut" este goală. Nu există date de exportat.', 'warning')
+        flash('Watch History is empty. No data to export.', 'warning')
         # Redirecționează înapoi la pagina de profil
         return redirect(url_for('user_profile', user_id=current_user.id))
 
@@ -468,13 +443,13 @@ def export_to_watch_list():
 @app.route("/export_seen_list", methods=['GET'])
 @login_required
 def export_seen_list():
-    """Exportă lista 'Văzute' a utilizatorului curent în CSV."""
+    """Export the current user's Watchlist to CSV."""
     
     # Preluare filme văzute (Necesită ca models.py să aibă relația SeenList.movie)
     seen_movies = SeenList.query.filter_by(user_id=current_user.id).all()
     
     if not seen_movies:
-        flash('Lista "Văzute" este goală. Nu există date de exportat.', 'warning')
+        flash('Watchlist is empty. No data to export.', 'warning')
         return redirect(url_for('user_profile', user_id=current_user.id))
 
     # Apelează modulul de export
@@ -567,7 +542,7 @@ def settings():
             current_user.email = profile_form.email.data
             database.session.commit()
             
-            flash('Profilul a fost actualizat cu succes!', 'success')
+            flash('Profile updated successfully!', 'success')
             return redirect(url_for('settings'))
 
     # --- GESTIONAREA FORMULARULUI DE SCHIMBARE PAROLĂ ---
@@ -577,10 +552,10 @@ def settings():
             # 2. Schimbă parola
             current_user.set_password(password_form.new_password.data)
             database.session.commit()
-            flash('Parola a fost schimbată cu succes!', 'success')
+            flash('Password changed successfully!', 'success')
             return redirect(url_for('settings'))
         else:
-            flash('Parola actuală este incorectă.', 'danger')
+            flash('Current password is incorrect.', 'danger')
             
     # Populează formularul de profil cu datele curente dacă cererea este GET
     elif request.method == 'GET':
@@ -588,7 +563,7 @@ def settings():
         profile_form.email.data = current_user.email
 
     return render_template('settings.html', 
-                           title='Setări Cont',
+                           title='Account Settings',
                            profile_form=profile_form,
                            password_form=password_form)
 
@@ -600,7 +575,7 @@ def my_ratings():
     user_ratings = Rating.query.filter_by(user_id=current_user.id).order_by(Rating.timestamp.desc()).all()
     
     return render_template('my_ratings.html', 
-                           title='Rating-urile Mele', 
+                           title='My Ratings', 
                            user_ratings=user_ratings)
 
 # 2. WATCHLIST (Modificat pentru a trimite obiectele, nu doar filmele)
@@ -611,7 +586,7 @@ def watchlist():
     watchlist_items = ToWatchList.query.filter_by(user_id=current_user.id).order_by(ToWatchList.date_added.desc()).all()
     
     return render_template('watchlist.html', 
-                           title='Lista Mea de Vizionare', 
+                           title='My Watchlist', 
                            watchlist_items=watchlist_items)
 
 # 3. FILME VĂZUTE (Modificat să interogheze SeenList)
@@ -622,7 +597,7 @@ def seen_list():
     seen_entries = SeenList.query.filter_by(user_id=current_user.id).order_by(SeenList.date_added.desc()).all()
     
     return render_template('seen_list.html', 
-                           title='Filme Văzute', 
+                           title='Seen Movies', 
                            seen_entries=seen_entries)
 
 # 4. TOGGLE WATCHLIST (Funcția de comutare)
@@ -636,12 +611,12 @@ def toggle_watchlist(movie_id):
     if entry:
         # Șterge (Remove)
         database.session.delete(entry)
-        flash(f'"{movie.title}" a fost eliminat din lista De Vizionare.', 'info')
+        flash(f'"{movie.title}" was removed from Watchlist.', 'info')
     else:
         # Adaugă (Add)
         new_entry = ToWatchList(user_id=current_user.id, movie_id=movie.id)
         database.session.add(new_entry)
-        flash(f'"{movie.title}" a fost adăugat în lista De Vizionare.', 'success')
+        flash(f'"{movie.title}" was added to Watchlist.', 'success')
 
     database.session.commit()
     return redirect(url_for('movie_details', movie_id=movie_id))
