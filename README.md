@@ -2,6 +2,8 @@
 
 *Live Access:* [parallax-movie-universe.webredirect.org](http://parallax-movie-universe.webredirect.org)
 
+*Github Repository:* [repository](https://github.com/raavar/Parallax-Movie-Universe)
+
 ## About The Project
 
 *Parallax - Movie Universe* is a comprehensive, full-stack web application designed to be your personal gateway to the cinematic world. It combines the utility of a robust movie catalog with the intelligence of a personalized recommendation system.
