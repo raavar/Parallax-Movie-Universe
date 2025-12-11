@@ -268,7 +268,7 @@ def toggle_seen(movie_id):
         # CRITICAL: Delete the rating as well, since the movie is no longer considered seen
         Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
-        flash(f'"{movie.title}" was deleted from Watch History and removed from ratings.', 'info')
+        flash(f'"{movie.title}" was deleted from Watch History and removed from Ratings.', 'info')
         status = 'removed'
     else:
         # If not seen, add it to seen list
@@ -403,9 +403,9 @@ def remove_rating(movie_id):
     if rating_entry:
         database.session.delete(rating_entry)
         database.session.commit()
-        flash(f"Rating-ul tău pentru filmul a fost șters!", 'success')
+        flash(f"Your rating was removed!", 'success')
     else:
-        flash("Nu ai un rating activ pentru acest film.", 'warning')
+        flash("You do not have an active rating for this movie.", 'warning')
         
     return redirect(url_for('movie_details', movie_id=movie_id))
 
@@ -504,7 +504,7 @@ def search():
 
 @app.route("/search_autocomplete")
 def search_autocomplete():
-    # Autocomplete-ul așteaptă 'q' ca parametru
+    # Autocomplete search route for movie titles and descriptions
     query = request.args.get('q', '')
     
     if not query:
@@ -513,15 +513,15 @@ def search_autocomplete():
     try:
         search_term = f"%{query}%"
         
-        # LOGICA MODIFICATĂ: Caută după title SAU description (ilike = case-insensitive LIKE)
+        # Search by title OR description, limit to 15 results
         suggestions = Movie.query.filter(
             (Movie.title.ilike(search_term)) | 
-            (Movie.description.ilike(search_term)) # <--- NOU: Inclusiv descrierea
+            (Movie.description.ilike(search_term))
         ).limit(15).all()
 
         results = []
         for movie in suggestions:
-            # Puteți returna doar titlul, dar includerea anului ajută la identificare
+            # Return ID, title with year, and URL for each movie
             results.append({
                 'id': movie.id,
                 'title': f"{movie.title} ({movie.release_year})",
@@ -531,9 +531,10 @@ def search_autocomplete():
         return jsonify(results)
         
     except Exception as e:
-        # În caz de eroare, returnează un array gol
+        # In case of error, return an empty array
         current_app.logger.error(f"Autocomplete search error: {e}") 
         return jsonify([]), 500
+
 # User Settings Section
 
 @app.route("/settings", methods=['GET', 'POST'])
