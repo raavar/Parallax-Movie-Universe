@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Filme Văzute{% endblock %}
+{% block title %}Watch History{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4 border-bottom pb-2">Filme Văzute ({{ seen_entries|length }})</h2>
+    <h1 class="mb-4 border-bottom pb-2">Watch History ({{ seen_entries|length }})</h1>
     
     {% if seen_entries %}
         <div class="movie-list-grid">
@@ -19,21 +19,29 @@
                     </a>
                     <div class="movie-card-content">
                         <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
-                        
-                        <div class="mb-2">
-                             <span class="badge btn-info"><i class="fas fa-check"></i> Văzut</span>
-                        </div>
 
-                        <p class="small text-muted mt-auto">
-                            Adăugat pe: {{ entry.date_added.strftime('%d-%m-%Y') }}
+                        <p class="small text-muted mb-2">
+                            Added: {{ entry.date_added.strftime('%d-%m-%Y') }}
                         </p>
+
+                        <div class="watched-badge-container d-flex justify-content-center w-100">
+                             <span class="badge btn-info"><i class="fas fa-check"></i> Watched</span>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Nu ai marcat niciun film ca văzut.</p>
-        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Vezi Catalogul</a>
+        <h3 class="text-muted" style= "text-align: center;">Your watch history is empty.</h3>
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 80px;">
+        
+            <a href="{{ url_for('catalog') }}" 
+            class="btn btn-primary shadow-lg home-explore-btn" 
+            role="button">
+                Explore more movies
+            </a>
+            
+        </div>
     {% endif %}
 </div>
 {% endblock %}

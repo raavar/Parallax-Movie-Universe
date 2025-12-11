@@ -1305,3 +1305,124 @@ h2, h3 {
     box-shadow: 0 0 10px rgba(220, 53, 81, 0.4);
     transform: translateY(-2px);
 }
+
+.watched-badge-container {
+    /* Asigură-te că nu există padding suplimentar */
+    padding: 5px 0; 
+    
+    /* Împinge elementul la fundul conținutului (dacă e necesar) */
+    margin-top: auto; 
+    
+    /* Fix pentru centrare (dacă align-items: center din movie-card-content nu funcționează) */
+    display: flex !important;
+    justify-content: center !important;
+}
+
+/* Stil pentru badge-ul în sine (pentru a arăta bine) */
+.badge.btn-info {
+    font-size: 0.9em;
+    padding: 6px 12px;
+    border-radius: 20px; /* Stilul tău de pill */
+}
+
+/* Aplicăm stilul 3D/rotund pe badge-ul "Watched" */
+.movie-card-content .badge.btn-info {
+    /* Preluăm stilurile de bază de la btn-details-3d, dar ajustate pentru un badge */
+    padding: 8px 15px !important;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
+    
+    /* Colțuri rotunjite (CERC) */
+    border-radius: 50px !important;
+    
+    /* Culori și fundal (Similar cu butonul, dar o culoare distinctivă) */
+    background-color: #f7cdd0 !important; /* Gri închis */
+    color: #1a1a1a !important;
+    border: none;
+    
+    /* Efectul 3D (Umbrele de relief) */
+    box-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.5);
+
+    /* Asigură centrarea în div-ul părinte */
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+
+/* CRITIC: Eliminăm complet efectul de HOVER */
+.movie-card-content .badge.btn-info:hover {
+    /* Anulează orice schimbare de fundal/culoare la hover */
+    background-color: #f7cdd0 !important; 
+    color: #1a1a1a !important;
+    
+    /* Anulează efectul de transformare/apasare */
+    box-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.5);
+    transform: none; /* Nu se mișcă */
+    cursor: default; /* Nu arată cursorul de link/pointer */
+}
+
+/* Stil 3D/Rotund Static pentru Badge-ul de Rating */
+.movie-card-content .badge-rating-3d {
+    /* Preluăm stilurile de bază de la watched, dar schimbăm culoarea de fundal */
+    padding: 8px 15px !important;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-transform: uppercase;
+    
+    border-radius: 50px !important;
+    
+    /* Culoarea fundalului: Galben/Auriu pentru Rating */
+    background-color: #f7cdd0 !important; 
+    color: #1a1a1a !important; /* Galben auriu pentru text */
+    border: none;
+    
+    /* Efectul 3D */
+    box-shadow: 
+        4px 4px 8px rgba(0, 0, 0, 0.5); 
+    
+    /* Asigură că rămâne static (fără hover) */
+    transform: none; 
+    cursor: default;
+    
+    /* Centrare în div-ul părinte */
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+}
+
+/* Eliminăm orice efect de hover (deși nu ar trebui să existe pe span) */
+.movie-card-content .badge-rating-3d:hover {
+    background-color: #f7cdd0 !important; 
+    color: #1a1a1a !important;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5); 
+}
+
+
+/* FLEXBOX: Împinge rating-ul și data la fund */
+.movie-card-content {
+    /* (Stil existent) */
+    display: flex;
+    flex-direction: column; 
+    align-items: center; /* Centrează orizontal toate elementele */
+    text-align: center;
+    flex-grow: 1;
+}
+
+/* Împinge Data (p.rating-date) la fundul conținutului */
+.movie-card-content p.rating-date {
+    margin-top: auto !important; /* CRITIC: Împinge data în jos */
+    margin-bottom: 5px !important; /* Spațiu sub data */
+    padding-top: 15px; /* Spațiu de la celelalte elemente */
+}
+
+/* Centrare pentru containerul badge-ului */
+.rating-badge-container {
+    display: flex;
+    justify-content: center; /* Centrează orizontal */
+    width: 100%;
+    margin-bottom: 15px; /* Spațiu sub badge */
+    padding-bottom: 5px; 
+}
