@@ -399,11 +399,6 @@ def rate_movie(movie_id):
 @app.route('/profile/<int:user_id>', methods=['GET'])
 @login_required
 def user_profile(user_id):
-    # Ensure the user is viewing their own profile
-    if current_user.id != user_id:
-        flash('You do not have permission to view this profile.', 'danger')
-        return redirect(url_for('home'))
-
     user = User.query.get_or_404(user_id)
     
     # Generate QR Code (using application context)
