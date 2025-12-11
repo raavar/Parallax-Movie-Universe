@@ -268,7 +268,7 @@ def toggle_seen(movie_id):
         # CRITICAL: Delete the rating as well, since the movie is no longer considered seen
         Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
-        flash(f'"{movie.title}" was deleted from Watch History and removed from ratings.', 'info')
+        flash(f'"{movie.title}" was deleted from Watch History and removed from Ratings.', 'info')
         status = 'removed'
     else:
         # If not seen, add it to seen list
@@ -391,6 +391,24 @@ def rate_movie(movie_id):
     # Redirect back to the movie details page
     return redirect(url_for('movie_details', movie_id=movie_id))
 
+@app.route("/remove_rating/<int:movie_id>", methods=['POST'])
+@login_required # Presupune că folosești Flask-Login
+def remove_rating(movie_id):
+    # Găsește rating-ul existent al utilizatorului pentru filmul respectiv
+    rating_entry = Rating.query.filter_by(
+        user_id=current_user.id, 
+        movie_id=movie_id
+    ).first()
+
+    if rating_entry:
+        database.session.delete(rating_entry)
+        database.session.commit()
+        flash(f"Your rating was removed!", 'success')
+    else:
+        flash("You do not have an active rating for this movie.", 'warning')
+        
+    return redirect(url_for('movie_details', movie_id=movie_id))
+
 # ==========================================================================================
 # Utility Routes
 # ==========================================================================================
@@ -486,6 +504,7 @@ def search():
 
 @app.route("/search_autocomplete")
 def search_autocomplete():
+    # Autocomplete search route for movie titles and descriptions
     query = request.args.get('q', '')
     
     if not query:
@@ -493,12 +512,16 @@ def search_autocomplete():
 
     try:
         search_term = f"%{query}%"
+        
+        # Search by title OR description, limit to 15 results
         suggestions = Movie.query.filter(
-            Movie.title.ilike(search_term)
+            (Movie.title.ilike(search_term)) | 
+            (Movie.description.ilike(search_term))
         ).limit(15).all()
 
         results = []
         for movie in suggestions:
+            # Return ID, title with year, and URL for each movie
             results.append({
                 'id': movie.id,
                 'title': f"{movie.title} ({movie.release_year})",
@@ -508,10 +531,9 @@ def search_autocomplete():
         return jsonify(results)
         
     except Exception as e:
-        # Log the full error
+        # In case of error, return an empty array
         current_app.logger.error(f"Autocomplete search error: {e}") 
-        # Return an empty response for frontend (but error is in logs)
-        return jsonify([]), 500 # Return error code 500
+        return jsonify([]), 500
 
 # User Settings Section
 

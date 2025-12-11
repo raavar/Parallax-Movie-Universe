@@ -22,11 +22,26 @@ body {
     z-index: 1000;
 }
 
+.navbar-left-group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 10px;
+}
+
+
 .navbar-logo-img {
     height: 40px; 
     width: auto;  
     object-fit: contain;
-    margin-right: 15px; /* Spațiu între logo și text */
+    margin-right: 10px; /* Spațiu între logo și text */
+    flex-shrink: 0;
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.navbar-logo-img:hover {
+    transform: scale(1.15) rotate(40deg);
 }
 
 .logo {
@@ -38,7 +53,11 @@ body {
     font-weight: bold;
     color: #DC3551; 
     text-decoration: none;
-    flex: 1;
+    /* flex: 1; */
+}
+
+.logo:hover {
+    color: #9e172e; 
 }
 
 /* Containerul de link-uri din navbar (dreapta) */
@@ -83,7 +102,7 @@ body {
     border: 1px solid #444;    /* Bordură subtilă */
     border-radius: 50px;       /* Formă rotundă */
     padding: 5px 15px;         /* Spațiu interior */
-    width: 500px;              /* Lățime fixă */
+    width: 400px;              /* Lățime fixă */
     transition: all 0.3s ease;
 }
 
@@ -329,10 +348,10 @@ h2, h3 {
     border-radius: 4px;
     font-weight: bold;
 }
-.alert-success { background-color: #4CAF50; color: white; }
-.alert-danger { background-color: #f44336; color: white; }
-.alert-warning { background-color: #ff9800; color: #333; }
-.alert-info { background-color: #2196F3; color: white; }
+.alert-success { background-color: #f7cdd0; color: #1a1a1a; }
+.alert-danger { background-color: #DC3551; color: #f7cdd0; }
+.alert-warning { background-color: #DC3551; color: #f7cdd0; }
+.alert-info { background-color: #f7cdd0; color: #1a1a1a; }
 
 /* Butoane Standard */
 .btn {
@@ -431,7 +450,7 @@ h2, h3 {
     font-weight: normal;
 }
 
-.genres-row { margin-bottom: 10px; }
+.genres-row { margin-bottom: 10px; gap: 6px; }
 
 .description {
     font-size: 0.9em;
@@ -465,6 +484,14 @@ h2, h3 {
 
     margin-bottom: 30px; 
     text-align: center;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.parallax-title:hover {
+    color: #9e172e; 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.7);
+    transform: scale(1.05);
 }
 
 /* 2. Containerul Caruselului */
@@ -626,10 +653,394 @@ h2, h3 {
 
 
 /* ======================================================= */
-/* DETALII FILM (Butoane Acțiune) */
+/* PAGINĂ DETALII FILM (movie_details.html) */
 /* ======================================================= */
-.user-actions-panel { width: 100%; }
-.w-100 { width: 100% !important; }
+
+/* 1. Titlul Principal și Rating Critic (Sus) */
+/* Containerul principal de sus (pentru Titlu, An și Rating-uri) */
+
+
+.movie-title-detail {
+    font-size: 4rem; 
+    color: #DC3551; 
+    
+    /* CRITIC: Schimbă comportamentul în interiorul Flexbox */
+    display: inline; /* Schimbăm la inline pentru a folosi doar spațiul necesar */
+    
+    margin-bottom: 0;
+    line-height: 1; 
+    text-transform: uppercase;
+    font-family: 'Bebas Neue', sans-serif;
+    border-bottom: none; 
+    
+    /* Previne ca titlul să se extindă pe verticală sau orizontală nejustificat */
+    flex-shrink: 1; 
+}
+
+/* 2. Grupul Stânga (Titlu și An): Asigură-te că stau pe același rând (deja e d-flex) */
+.title-and-year-group {
+    /* CRITIC: Asigură că grupul nu se micșorează și nu se extinde inutil */
+    flex-grow: 0; 
+    flex-shrink: 0;
+    display: flex; /* Reconfirmi */
+    align-items: flex-end; /* Reconfirmi */
+}
+
+/* 3. Grupul Dreapta (Rating-uri) */
+.rating-badges-group {
+    flex-shrink: 0; /* Previne micșorarea rating-urilor */
+    flex-grow: 0;
+    padding-top: 41.5px
+}
+
+/* Containerul principal trebuie să le forțeze să stea pe rând */
+.main-header-flex {
+    display: flex;
+    justify-content: space-between; /* CRITIC: Aliniere Stânga/Dreapta */
+    align-items: center;
+    border-bottom: 2px solid #333; 
+}
+
+/* Anul Lansării */
+.movie-year {
+    font-size: 1.5rem;
+    color: #999;
+    font-family: 'Montserrat', sans-serif;
+    margin-left: 15px;
+    padding-bottom: 2.3px;
+}
+
+/* Rating Mediu Global (Text simplu) */
+.avg-rating-global-badge {
+    font-size: 1.2rem;
+    color: #ccc;
+    font-weight: bold;
+    padding: 8px 0;
+    text-align: center;
+    margin-top: 10px;
+}
+.avg-rating-global-badge strong {
+    color: #DC3551; /* Galben auriu pentru scor */
+}
+
+/* Rating Critic (Chenar/Badge) */
+.critic-rating-badge {
+    background-color: #1f1f1f; /* Fundal întunecat */
+    border: 1px solid #DC3551; /* Chenar auriu */
+    color: #DC3551 !important; /* Text auriu */
+    font-size: 1.1em;
+    padding: 8px 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    margin-bottom: 0;
+    line-height: 1;
+    flex-shrink: 1; 
+}
+
+/* Liniile Separatoare (pentru curățenie) */
+.header-divider {
+    margin-top: -15px; 
+    margin-bottom: 30px;
+    opacity: 0; /* O ascundem dacă folosim border-bottom pe main-header-flex */
+}
+.subtitle-row {
+    margin-top: -10px !important;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+
+/* Poster Image */
+.detail-poster {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.8);
+    transition: transform 0.3s ease-in-out;
+    width: 100%; /* CRITIC: Ocupă 100% din spațiul coloanei (col-md-4) */
+    height: auto;
+    display: block;
+}
+
+.detail-poster:hover {
+    transform: scale(1.02);
+}
+
+/* Descrierea filmului */
+.movie-description-detail {
+    font-size: 1.1em;
+    color: #ccc;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(247, 205, 208, 0.5);
+    margin-bottom: 30px;
+}
+
+/* Titluri Secțiuni DREAPTA */
+.section-title-detail {
+    color: #DC3551;
+    font-size: 2rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.section-title-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 30px 0; 
+    margin-top: 50px;
+}
+
+.section-title-small {
+    font-size: 2rem;          
+    font-weight: 700;         
+    color: #f7cdd0;           
+    padding: 0 20px;          
+    text-transform: none;     
+    margin: 0;                
+    white-space: nowrap;
+    text-decoration: none !important;
+    border-bottom: none !important;  
+}
+
+.section-title-container::before,
+.section-title-container::after {
+    content: "";
+    flex-grow: 1;             
+    height: 1px;              
+    background-color: #f7cdd0;   
+    opacity: 0.5;             
+}
+
+.movie-details-content {
+    /* Flexbox-ul din interiorul coloanei md-8 rămâne util */
+    display: flex;
+    flex-direction: column; 
+    padding-left: 30px; /* Adaugă puțin spațiu între imagine și detalii */
+}
+
+/* Regula generală ROW (Verificare) */
+.row {
+    display: flex;
+    /* Aliniază elementele de sus (imaginea și detaliile) */
+    align-items: flex-start;
+}
+
+/* Asigură că titlul și rating-urile nu au margini care să împingă rândul în jos */
+.main-header-flex {
+    /* ... (stilul existent) ... */
+    margin-bottom: 20px !important; /* Asigură un spațiu rezonabil sub header */
+}
+
+/* Containerul care găzduiește butoanele (noua clasă) */
+.movie-actions-row {
+    display: flex !important; /* Forțează Flexbox */
+    justify-content: space-between;
+    width: 100%; /* Ocupă lățimea completă a coloanei din dreapta */
+    gap: 15px;
+}
+
+/* Formularele care conțin butoanele */
+.movie-actions-row form {
+    /* CRITIC: Asigură că fiecare formular se extinde pentru a umple spațiul egal */
+    flex-grow: 1 !important; 
+    flex-basis: 0; /* Ajută la distribuirea uniformă a spațiului */
+    margin: 0 !important; /* Elimină orice margine verticală nedorită */
+}
+
+/* Butoanele din interiorul formularelor */
+.movie-actions-row button {
+    width: 100% !important; /* Butonul umple spațiul formularului */
+}
+
+.star-rating {
+    display: flex;
+    justify-content: center; /* Centrează grupul de stele */
+    font-size: 1.8em; /* Mărimea stelelor */
+    gap: 5px; /* Spațiu între stele */
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.star {
+    color: #444; /* Culoarea implicită (gol) */
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, transform 0.1s ease-in-out;
+}
+
+/* Steluța la hover și steluțele selectate */
+.star:hover,
+.star.selected,
+.star.hovered {
+    color: #DC3551; /* Galben auriu */
+}
+
+/* Efect mic la hover/click */
+.star:hover {
+    transform: scale(1.15);
+}
+
+/* Ascunde cursorul pointer când hover-ul nu e activ pe steluța în sine */
+.star-rating:not(:hover).star {
+    /* Nu aplicăm un stil special pentru steluțele goale (nu selectate) */
+    border: none;
+}
+
+.large-star-display {
+    /* Folosim o iconiță sau un fundal SVG pentru forma stelei (aici, simulăm cu FontAwesome) */
+    position: relative;
+    font-size: 5rem; /* Mărimea stelei */
+    color: #4A90E2; /* Culoarea stelei mari (similar cu imaginea de referință) */
+    width: 1em; /* Lățimea forțată */
+    height: 1em; /* Înălțimea forțată */
+    margin-bottom: 20px;
+}
+
+.large-star-display::before {
+    /* Afișează o stea mare (Font Awesome) în fundal */
+    content: "\f005"; /* Codul unic al stelei solide */
+    font-family: 'Font Awesome 5 Free'; 
+    font-weight: 900;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Scorul (numărul) în centrul stelei */
+.large-star-display span {
+    position: absolute;
+    
+    /* Ajustare CRITICĂ: Mutați-l vizual în JOS (de la 45% la 50%) */
+    /* Folosim 50% pentru 'top' și ajustăm vizual prin transform */
+    top: 50%; 
+    left: 50%;
+    
+    /* Transformarea asigură centrarea orizontală și mută numărul în sus */
+    /* Schimbăm Y-ul de la -50% la -60% pentru a-l trage mai mult în sus */
+    transform: translate(-50%, -60%); 
+    
+    font-size: 0.38em; 
+    color: white; 
+    font-weight: bold;
+    z-index: 10;
+}
+
+.btn-remove-rating {
+    background-color: transparent !important; /* Gri închis */
+    color: #DC3551 !important; /* Text roșu */
+    border: 1px solid #DC3551 !important;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.btn-remove-rating:hover {
+    background-color: #DC3551 !important; /* Roșu la hover */
+    color: #f7cdd0 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 81, 0.5);
+    transform: translateY(-1px);
+}
+
+/* === Butoane Acțiuni === */
+
+/* Watchlist (Roșu) */
+.btn-action-primary, .btn-action-checked {
+    background-color: #f7cdd0 !important; 
+    border-color: #f7cdd0 !important;
+    color: #1a1a1a !important;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-top: 25px;
+}
+.btn-action-primary:hover {
+    background-color: #DC3551 !important;
+    color: #f7cdd0 !important;
+}
+.btn-action-checked {
+    background-color: #DC3551 !important;
+    color: #f7cdd0 !important;
+}
+
+/* Seen (Gri/Secundar) */
+.btn-action-seen {
+    background-color: #222 !important; 
+    color: #DC3551 !important; /* Culoare diferită pentru Văzut */
+    border: 1px solid #DC3551 !important;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 25px;
+}
+.btn-action-seen:hover {
+    background-color: #222 !important;
+}
+.btn-action-default {
+    background-color: transparent !important;
+    color: #DC3551 !important;
+    border: 1px solid #DC3551 !important;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 25px;
+}
+
+.btn-action-default:hover {
+    background-color: #DC3551 !important; /* Roșu la hover */
+    color: #f7cdd0 !important;
+    box-shadow: 0 0 8px rgba(220, 53, 81, 0.5);
+    transform: translateY(-1px);
+}
+
+/* === Secțiunea Rating === */
+.rating-box {
+    background-color: transparent;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.current-hover-score {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #DC3551; /* Roșu de accent */
+    min-width: 40px; /* Asigură un spațiu constant pentru scor */
+    text-align: center;
+    transition: color 0.1s ease;
+    gap: 10px;
+}
+
+/* Ajustăm label-ul pentru a se centra (dacă nu era deja) */
+.rating-box .form-label {
+    font-size: 1.1em;
+    color: #ccc;
+    display: flex; /* Asigură că funcționează d-flex chiar dacă lipsește clasa Bootstrap */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.current-rating {
+    font-size: 1.1em;
+    color: #ccc;
+}
+
+.btn-rating {
+    background-color: #f7cdd0 !important;
+    border-color: #f7cdd0 !important;
+    color: #1a1a1a !important;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.btn-rating:hover {
+    background-color: #DC3551 !important;
+    color: #f7cdd0 !important;
+}
 
 /* Asigură că butoanele sunt centrate în div-ul lor părinte */
 .settings-page .form-group.text-center {
@@ -707,8 +1118,7 @@ h2, h3 {
 .btn-outline-secondary:hover { background-color: #333; color: white; }
 
 #ratingSection {
-    background-color: #2a2a2a;
-    border: 1px solid #444 !important;
+    background-color: transparent;
 }
 
 /* FILTRE (Catalog) */
