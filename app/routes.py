@@ -43,17 +43,16 @@ def home():
     # Render the home template with movies and recommendations
     return render_template('index.html', title='Home', movies=recommendations)
 
-# --- Rută: Catalogul Complet ('/catalog') cu Paginare, Filtre și Sortare ---
-
+# Catalog Route with Pagination, Filters, and Sorting
 @app.route("/catalog", methods=['GET'])
 def catalog():
-    # --- Preluare Parametri ---
+    # Get parameters
     page = request.args.get('page', 1, type=int)
     
-    # NOU: Preluare listă de genuri (din butoanele/checkbox-urile frontend)
+    # Get list of genres (from frontend buttons/checkboxes)
     selected_genres = request.args.getlist('genre') 
     
-    # NOU: Preluare interval de an
+    # Get year range
     min_year = request.args.get('min_year', type=int)
     max_year = request.args.get('max_year', type=int)
     
@@ -61,24 +60,24 @@ def catalog():
     
     PER_PAGE = 20
     
-    # Interogarea de bază selectează obiectele Movie
+    # Base query selects Movie objects
     query = database.session.query(Movie)
     
-    # --- 1. Preluare Genuri Disponibile (pentru butoanele tag) ---
-    # Interogarea pentru a prelua genuri doar din tabela Movie/Genre
+    # 1. Get Available Genres (for tag buttons)
+    # Query to fetch genres only from the Movie/Genre table
     available_genres = database.session.query(
         Genre.name, func.count(distinct(Movie.id)).label('movie_count')
     ).join(Movie.genres).group_by(Genre.name).order_by(Genre.name).all()
 
 
-    # --- 2. Filtrarea ---
+    # 2. Filtering
     
-    # FILTRARE MULTI-GEN (OR logic): Filmele trebuie să aibă CEL PUȚIN unul dintre genurile selectate
+    # MULTI-GENRE FILTER (OR logic): Movies must have AT LEAST one of the selected genres
     if selected_genres:
-        # Folosim join pentru a lega Movie de Genre și filtram după genurile selectate
+        # Use join to link Movie to Genre and filter by selected genres
         query = query.join(Movie.genres).filter(Genre.name.in_(selected_genres))
         
-    # FILTRARE INTERVAL AN
+    # YEAR RANGE FILTER
     year_filters = []
     if min_year:
         year_filters.append(Movie.release_year >= min_year)
@@ -86,10 +85,10 @@ def catalog():
         year_filters.append(Movie.release_year <= max_year)
         
     if year_filters:
-        # Aplică filtrele de an dacă există
+        # Apply year filters if they exist
         query = query.filter(and_(*year_filters)) 
     
-    # --- 3. Sortarea ---
+    # 3. Sorting
 
     if current_sort == 'year_desc':
         query = query.order_by(Movie.release_year.desc())
@@ -103,26 +102,26 @@ def catalog():
         
     elif current_sort == 'title_desc':
         query = query.order_by(Movie.title.desc())
-    else: # title_asc (Implicit)
+    else: # title_asc (Default)
         query = query.order_by(Movie.title.asc())
 
-    # --- 4. Paginarea ---
+    # 4. Pagination
     movies_paginated = query.paginate(
         page=page,
         per_page=PER_PAGE,
         error_out=False
     )
     
-    # Nu mai trebuie să extragem din tuple, deoarece nu mai sortăm după rating
+    # We no longer need to extract from tuples since we are not sorting by rating
     movies_to_display = movies_paginated.items
 
     return render_template('catalog.html',
                            movies=movies_to_display,
                            pagination=movies_paginated,
                            available_genres=available_genres,
-                           selected_genres=selected_genres,  # NOU: Lista de genuri selectate
-                           min_year=min_year,                # NOU: Anul minim
-                           max_year=max_year,                # NOU: Anul maxim
+                           selected_genres=selected_genres,  # List of selected genres
+                           min_year=min_year,                # Minimum year
+                           max_year=max_year,                # Maximum year
                            current_sort=current_sort)
 
 # User registration route
@@ -263,20 +262,20 @@ def toggle_seen(movie_id):
     seen_entry = SeenList.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
     
     if seen_entry:
-        # Dacă este văzut, îl scoatem de la văzute
+        # If seen, remove it from seen list
         database.session.delete(seen_entry)
         
-        # ⚠️ CRITIC: Ștergem și ratingul, deoarece filmul nu mai este considerat văzut
+        # CRITICAL: Delete the rating as well, since the movie is no longer considered seen
         Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
         flash(f'"{movie.title}" was deleted from Watch History and removed from ratings.', 'info')
         status = 'removed'
     else:
-        # Dacă nu este văzut, îl adăugăm la văzute
+        # If not seen, add it to seen list
         new_entry = SeenList(user_id=current_user.id, movie_id=movie_id)
         database.session.add(new_entry)
         
-        # Opțional: Ștergem din Watchlist (dacă este trecut la văzute)
+        # Optional: Remove from Watchlist (if moved to seen)
         # ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
         flash(f'"{movie.title}" was added to Watch History.', 'success')
@@ -293,7 +292,7 @@ def movie_details(movie_id):
     # Find the movie by ID
     movie = Movie.query.get_or_404(movie_id)
 
-    # --- 1. PRELUARE RATING-URI GLOBALE ---
+    # 1. GET GLOBAL RATINGS
     # Fetch ratings for the movie
     ratings = Rating.query.filter_by(movie_id=movie.id).all()
 
@@ -302,22 +301,22 @@ def movie_details(movie_id):
     if ratings:
         avg_rating = sum(rating.score for rating in ratings) / len(ratings)
 
-    # --- 2. PRELUARE STAREA UTILIZATORULUI ---
+    # 2. GET USER STATE
     is_in_watchlist = False
     is_seen = False
     user_rating_score = None
     user_rating_obj = None
 
     if current_user.is_authenticated:
-        # A. Rating-ul utilizatorului
+        # A. User rating
         user_rating_obj = Rating.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()
         if user_rating_obj:
             user_rating_score = user_rating_obj.score
-            is_seen = True # Marcat automat ca văzut dacă există rating
+            is_seen = True # Automatically marked as seen if rating exists
         
-        # B. SeenList (Verificăm SeenList doar dacă nu are rating, pentru flexibilitate)
+        # B. SeenList (Check SeenList only if no rating, for flexibility)
         elif SeenList.query.filter_by(user_id=current_user.id, movie_id=movie.id).first():
-             is_seen = True # Marcat ca văzut (fără rating)
+             is_seen = True # Marked as seen (without rating)
         
         # C. Watchlist
         if ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie.id).first():
@@ -331,10 +330,10 @@ def movie_details(movie_id):
                            ratings=ratings, 
                            avg_rating=avg_rating, 
                            
-                           # Variabilele de stare NOU trimise către Frontend
+                           # State variables newly sent to Frontend
                            is_in_watchlist=is_in_watchlist,
                            is_seen=is_seen,
-                           user_rating=user_rating_score # Trimitem doar scorul
+                           user_rating=user_rating_score # Send only the score
                           )
 
 # Rate movie route
@@ -361,32 +360,32 @@ def rate_movie(movie_id):
         flash('Please provide a valid rating between 1 and 10.', 'danger')
         return redirect(url_for('movie_details', movie_id=movie_id))
     
-    # Verifică dacă rating-ul există deja
+    # Check if the rating already exists
     rating = Rating.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
-    movie = Movie.query.get_or_404(movie_id) # Preluăm filmul pentru mesaje
+    movie = Movie.query.get_or_404(movie_id) # Fetch the movie for messages
 
     if rating:
-        # Actualizează rating-ul existent
+        # Update existing rating
         rating.score = score
         flash(f'Updated your rating for "{movie.title}" to {score}.', 'success')
     else:
-        # Creează un rating nou
+        # Create a new rating
         new_rating = Rating(user_id=current_user.id, movie_id=movie_id, score=score)
         database.session.add(new_rating)
         flash(f'You rated "{movie.title}" with a score of {score}.', 'success')
         
-    # --- LOGICA CRITICĂ: Asigură-te că filmul este marcat ca văzut ---
+    # CRITICAL LOGIC: Ensure the movie is marked as seen
     seen_entry = SeenList.query.filter_by(user_id=current_user.id, movie_id=movie_id).first()
     
     if not seen_entry:
-        # Adaugă filmul în SeenList, deoarece a primit un rating
+        # Add movie to SeenList because it received a rating
         new_seen_entry = SeenList(user_id=current_user.id, movie_id=movie_id)
         database.session.add(new_seen_entry)
         
-        # Opțional: șterge-l din ToWatchList dacă a fost adăugat
+        # Optional: remove from ToWatchList if added
         # ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie_id).delete()
         
-    # Commit final al tuturor schimbărilor (rating, seenlist, towatchlist)
+    # Final commit of all changes (rating, seenlist, towatchlist)
     database.session.commit()
 
     # Redirect back to the movie details page
@@ -396,96 +395,96 @@ def rate_movie(movie_id):
 # Utility Routes
 # ==========================================================================================
 
-# RUTA: Exportă lista de filme văzute (sau de vizionat) ca CSV
+# ROUTE: Export seen movie list (or to-watch) as CSV
 @app.route('/profile/<int:user_id>', methods=['GET'])
 @login_required
 def user_profile(user_id):
-    # Asigură-te că utilizatorul își vizualizează propriul profil
+    # Ensure the user is viewing their own profile
     if current_user.id != user_id:
         flash('You do not have permission to view this profile.', 'danger')
         return redirect(url_for('home'))
 
     user = User.query.get_or_404(user_id)
     
-    # Generare QR Code (folosind contextul aplicației)
+    # Generate QR Code (using application context)
     qr_data_uri = generate_user_qr_code(user_id)
     
-    # Preluare liste de filme (pentru afișare)
+    # Fetch movie lists (for display)
     seen_movies = SeenList.query.filter_by(user_id=user_id).all()
     to_watch_movies = ToWatchList.query.filter_by(user_id=user_id).all()
 
     return render_template('user_profile.html', 
-                           title=f'Profil {user.username}', 
+                           title=f'Profile {user.username}', 
                            user=user,
                            qr_data_uri=qr_data_uri,
                            seen_movies=seen_movies,
                            to_watch_movies=to_watch_movies)
 
-# Ruta pentru exportul listei "De Văzut" ca CSV
+# Route for exporting the "To Watch" list as CSV
 @app.route("/export_to_watch_list", methods=['GET'])
 @login_required
 def export_to_watch_list():
     """Export the current user's Watchlist to CSV."""
     
-    # Preluare filme din lista "De Văzut" a utilizatorului logat
+    # Fetch movies from the logged-in user's "To Watch" list
     to_watch_movies = ToWatchList.query.filter_by(user_id=current_user.id).all()
     
     if not to_watch_movies:
         flash('Watch History is empty. No data to export.', 'warning')
-        # Redirecționează înapoi la pagina de profil
+        # Redirect back to the profile page
         return redirect(url_for('user_profile', user_id=current_user.id))
 
-    # Apelează modulul de export
+    # Call the export module
     return export_movie_list_to_csv(to_watch_movies, filename="parallax_to_watch_list.csv")
 
-# --- Rută nouă: Export date CSV ---
+# New Route: Export CSV Data
 
 @app.route("/export_seen_list", methods=['GET'])
 @login_required
 def export_seen_list():
     """Export the current user's Watchlist to CSV."""
     
-    # Preluare filme văzute (Necesită ca models.py să aibă relația SeenList.movie)
+    # Fetch seen movies (Requires SeenList.movie relationship in models.py)
     seen_movies = SeenList.query.filter_by(user_id=current_user.id).all()
     
     if not seen_movies:
         flash('Watchlist is empty. No data to export.', 'warning')
         return redirect(url_for('user_profile', user_id=current_user.id))
 
-    # Apelează modulul de export
+    # Call the export module
     return export_movie_list_to_csv(seen_movies, filename="parallax_seen_list.csv")
 
 
-# --- Rută nouă: Căutare Filme ---
+# New Route: Movie Search
 
 @app.route("/search", methods=['GET'])
 def search():
     """
-    Gestionează cererile de căutare, interogând baza de date 
-    pentru filme după titlu sau descriere.
+    Handles search requests by querying the database 
+    for movies by title or description.
     """
-    # Preluare termen de căutare din URL (ex: /search?query=inception)
+    # Get search term from URL (e.g., /search?query=inception)
     query = request.args.get('query', '') 
     
     results = []
     
     if query:
-        # Creează termenul de căutare pentru operatorul LIKE (e.g., "%interstellar%")
+        # Create search term for LIKE operator (e.g., "%interstellar%")
         search_term = f"%{query}%"
         
-        # Interogarea SQLAlchemy: Caută după titlu SAU descriere (case-insensitive)
+        # SQLAlchemy Query: Search by title OR description (case-insensitive)
         results = Movie.query.filter(
             (Movie.title.ilike(search_term)) | 
             (Movie.description.ilike(search_term))
         ).all()
         
-        # Număr de rezultate
+        # Count of results
         count = len(results)
     else:
         count = 0
 
     return render_template('search_results.html', 
-                           title=f"Rezultate Căutare: {query}",
+                           title=f"Search Results: {query}",
                            query=query,
                            results=results,
                            count=count)
@@ -514,30 +513,30 @@ def search_autocomplete():
         return jsonify(results)
         
     except Exception as e:
-        # Loghează eroarea completă
-        current_app.logger.error(f"Eroare la căutarea autocomplete: {e}") 
-        # Returnează un răspuns gol pentru frontend (dar eroarea e în log-uri)
-        return jsonify([]), 500 # Returnează codul de eroare 500
+        # Log the full error
+        current_app.logger.error(f"Autocomplete search error: {e}") 
+        # Return an empty response for frontend (but error is in logs)
+        return jsonify([]), 500 # Return error code 500
 
-## --- Secțiunea de Setări Utilizator ---
+# User Settings Section
 
 @app.route("/settings", methods=['GET', 'POST'])
 @login_required
 def settings():
-    # Inițializarea formularelor
+    # Initialize forms
     profile_form = UpdateProfileForm()
     password_form = ChangePasswordForm()
 
-    # Pentru validarea unică a profilului, setează ID-ul original al utilizatorului
+    # For unique profile validation, set the original user ID
     profile_form.original_user_id = current_user.id
     
-    # --- GESTIONAREA FORMULARULUI DE ACTUALIZARE PROFIL ---
+    # PROFILE UPDATE FORM HANDLING
     if profile_form.validate_on_submit() and profile_form.submit.data:
-        # 1. Verifică dacă datele introduse sunt diferite de cele curente
+        # 1. Check if entered data is different from current
         if (current_user.username != profile_form.username.data or 
             current_user.email != profile_form.email.data):
             
-            # 2. Actualizează utilizatorul și salvează în baza de date
+            # 2. Update user and save to database
             current_user.username = profile_form.username.data
             current_user.email = profile_form.email.data
             database.session.commit()
@@ -545,11 +544,11 @@ def settings():
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('settings'))
 
-    # --- GESTIONAREA FORMULARULUI DE SCHIMBARE PAROLĂ ---
+    # PASSWORD CHANGE FORM HANDLING
     if password_form.validate_on_submit() and password_form.submit.data:
-        # 1. Verifică parola veche
+        # 1. Verify old password
         if current_user.check_password(password_form.old_password.data):
-            # 2. Schimbă parola
+            # 2. Change password
             current_user.set_password(password_form.new_password.data)
             database.session.commit()
             flash('Password changed successfully!', 'success')
@@ -557,7 +556,7 @@ def settings():
         else:
             flash('Current password is incorrect.', 'danger')
             
-    # Populează formularul de profil cu datele curente dacă cererea este GET
+    # Populate profile form with current data if request is GET
     elif request.method == 'GET':
         profile_form.username.data = current_user.username
         profile_form.email.data = current_user.email
@@ -567,40 +566,40 @@ def settings():
                            profile_form=profile_form,
                            password_form=password_form)
 
-# 1. RATING-URILE MELE (Pagina nouă)
+# 1. MY RATINGS (New Page)
 @app.route("/my_ratings")
 @login_required
 def my_ratings():
-    # Preluăm doar ratingurile, ordonate după data când au fost date
+    # Fetch only ratings, ordered by date
     user_ratings = Rating.query.filter_by(user_id=current_user.id).order_by(Rating.timestamp.desc()).all()
     
     return render_template('my_ratings.html', 
                            title='My Ratings', 
                            user_ratings=user_ratings)
 
-# 2. WATCHLIST (Modificat pentru a trimite obiectele, nu doar filmele)
+# 2. WATCHLIST (Modified to send objects, not just movies)
 @app.route("/watchlist")
 @login_required
 def watchlist():
-    # Trimitem obiectele ToWatchList pentru a avea acces la data adăugării (date_added)
+    # Send ToWatchList objects to access the added date
     watchlist_items = ToWatchList.query.filter_by(user_id=current_user.id).order_by(ToWatchList.date_added.desc()).all()
     
     return render_template('watchlist.html', 
                            title='My Watchlist', 
                            watchlist_items=watchlist_items)
 
-# 3. FILME VĂZUTE (Modificat să interogheze SeenList)
+# 3. SEEN MOVIES (Modified to query SeenList)
 @app.route("/seen_list")
 @login_required
 def seen_list():
-    # Preluăm intrările din SeenList, ordonate cronologic
+    # Fetch entries from SeenList, ordered chronologically
     seen_entries = SeenList.query.filter_by(user_id=current_user.id).order_by(SeenList.date_added.desc()).all()
     
     return render_template('seen_list.html', 
                            title='Seen Movies', 
                            seen_entries=seen_entries)
 
-# 4. TOGGLE WATCHLIST (Funcția de comutare)
+# 4. TOGGLE WATCHLIST (Switch function)
 @app.route('/toggle_watchlist/<int:movie_id>', methods=['POST'])
 @login_required
 def toggle_watchlist(movie_id):
@@ -609,11 +608,11 @@ def toggle_watchlist(movie_id):
     entry = ToWatchList.query.filter_by(user_id=current_user.id, movie_id=movie.id).first()
     
     if entry:
-        # Șterge (Remove)
+        # Remove
         database.session.delete(entry)
         flash(f'"{movie.title}" was removed from Watchlist.', 'info')
     else:
-        # Adaugă (Add)
+        # Add
         new_entry = ToWatchList(user_id=current_user.id, movie_id=movie.id)
         database.session.add(new_entry)
         flash(f'"{movie.title}" was added to Watchlist.', 'success')
