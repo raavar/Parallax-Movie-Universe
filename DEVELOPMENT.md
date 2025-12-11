@@ -44,7 +44,7 @@ make database
 make update_movies
 ```
 
-**Note**: If you have **new movie** data prepared, you can add it in `database/movies_to_add.csv`, and use this command to safely integrate it into the main `movies.csv` file.
+**Note**: If you have **new movie** data prepared, you can add it in `database/csv/movies_to_add.csv`, and use this command to safely integrate it into the main `movies.csv` file.
 
 This script ensures:
 
