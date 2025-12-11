@@ -3,36 +3,33 @@
 
 {% block content %}
     <div class="form-container">
-        <h1>Înregistrează-te</h1>
-        <p>Alătură-te Universului Parallax pentru a urmări filmele și a primi recomandări personalizate.</p>
+        <h1>Register</h1>
+        <p>Join the Parallax Universe to watch movies and receive personalized recommendations.</p>
         
         <form method="POST" action="{{ url_for('register') }}" class="auth-form">
             <div class="form-group">
-                <label for="username">Nume Utilizator:</label>
                 <input type="text" id="username" name="username" required 
-                       placeholder="Introdu un nume de utilizator">
+                       placeholder="Enter a username">
             </div>
             
             <div class="form-group">
-                <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required 
-                       placeholder="Adresa de email">
+                       placeholder="Enter a valid email address">
             </div>
             
             <div class="form-group">
-                <label for="password">Parolă:</label>
                 <input type="password" id="password" name="password" required
                         minlength="8"
-                       placeholder="Parolă puternică (minim 8 caractere)">
+                       placeholder="Enter a strong password (at least 8 characters)">
             </div>
             
             <button type="submit" class="btn btn-primary btn-full-width">
-                Înregistrează-te
+                Register
             </button>
         </form>
         
         <div class="auth-footer">
-            <p>Ai deja cont? <a href="{{ url_for('login') }}">Loghează-te aici</a>.</p>
+            <p>Already have an account? <a href="{{ url_for('login') }}">Log in here</a>.</p>
         </div>
     </div>
 {% endblock %}
