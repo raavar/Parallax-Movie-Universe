@@ -4,14 +4,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
 
-# 1. Tabelă de asociere (Fără clasă Model)
-# Aceasta este legătura fizică dintre filme și genuri
+# Association table linking movies and genres physically without a model class
 movie_genre_association = database.Table('movie_genre_association', database.metadata,
     database.Column('movie_id', database.Integer, database.ForeignKey('movie.id'), primary_key=True),
     database.Column('genre_id', database.Integer, database.ForeignKey('genre.id'), primary_key=True)
 )
 
-# 2. Modelul Genre (Genul propriu-zis)
+# The Genre model representing specific movie genres
 class Genre(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     name = database.Column(database.String(50), unique=True, nullable=False)
@@ -27,18 +26,17 @@ class User(database.Model, UserMixin):
     email = database.Column(database.String(255), unique=True, nullable=False)
     password = database.Column(database.String(255), nullable=False)
     
-    # NEW: Confirmation flag (default to False)
+    # Confirmation flag defaulting to False
     is_confirmed = database.Column(database.Boolean, default=False)
     confirmed_on = database.Column(database.DateTime, nullable=True)
     
-    # NOU: Coloană pentru a marca utilizatorii ca administratori
+    # Column to mark users as administrators
     is_admin = database.Column(database.Boolean, default=False)
 
-    # Corecție Relații: Trecem la back_populates pentru Rating
-    # Relația din User către Rating
+    # Relationship from User to Rating using back_populates
     ratings = database.relationship('Rating', back_populates='user', lazy=True)
     
-    # Relațiile SeenList și ToWatchList pot folosi backref simplu pentru a evita conflictele complexe
+    # Relationships for SeenList and ToWatchList using simple backref to avoid conflicts
     seen_list = database.relationship("SeenList", backref='user', lazy=True)
     to_watch_list = database.relationship("ToWatchList", backref='user', lazy=True)
 
@@ -50,7 +48,7 @@ class User(database.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
     
-    # String representation of the User model (CRUCIAL pentru Flask-Admin)
+    # String representation of the User model, crucial for Flask-Admin display
     def __repr__(self):
         return f"User: {self.username}"
     
@@ -65,26 +63,25 @@ class Movie(database.Model):
     poster_url = database.Column(database.String(500), nullable=True)
     imdb_rating = database.Column(database.String(10), nullable=True)
     
-    # --- NEW ML FEATURES ---
+    # New features added for machine learning purposes
     runtime_minutes = database.Column(database.Integer, nullable=True)  # e.g., 120
     meta_score = database.Column(database.Integer, nullable=True)       # e.g., 85
     imdb_votes = database.Column(database.BigInteger, nullable=True)    # e.g., 1500000
     box_office = database.Column(database.BigInteger, nullable=True)    # e.g., 500000000
     rated = database.Column(database.String(10), nullable=True)         # e.g., "PG-13"
 
-    # Relația Mulți-la-Mulți (pentru a accesa Movie.genres)
+    # Many-to-Many relationship to access movie genres using the association table
     genres = database.relationship(
         'Genre', 
-        secondary=movie_genre_association, # Folosește tabela de asociere
+        secondary=movie_genre_association, 
         backref=database.backref('movies', lazy='dynamic'), 
         lazy='select'
     )
 
-    # Corecție Relații: Trecem la back_populates
-    # Relația din Movie către Rating
+    # Relationship from Movie to Rating using back_populates
     ratings = database.relationship('Rating', back_populates='movie', lazy=True)
 
-    # String representation of the Movie model (CRUCIAL pentru Flask-Admin)
+    # String representation of the Movie model, crucial for Flask-Admin display
     def __repr__(self):
         return f"Movie: {self.title} ({self.release_year})"
 
@@ -95,10 +92,10 @@ class Rating(database.Model):
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
     
-    # CORECȚIE: Relația inversă către User (rezolvă AttributeError)
+    # Inverse relationship to User to resolve attribute errors
     user = database.relationship('User', back_populates='ratings', lazy=True) 
     
-    # CORECȚIE: Relația inversă către Movie (rezolvă conflictele)
+    # Inverse relationship to Movie to resolve conflicts
     movie = database.relationship('Movie', back_populates='ratings', lazy=True)
     
     score = database.Column(database.Integer, nullable=False)
@@ -113,7 +110,7 @@ class SeenList(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
-    # Adaugă relația explicită pentru a permite accesul item.movie
+    # Explicit relationship to allow accessing the movie object directly
     movie = database.relationship('Movie', backref='seen_by_users', lazy=True)
     date_added = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
@@ -126,7 +123,7 @@ class ToWatchList(database.Model):
     id = database.Column(database.Integer, primary_key=True)
     user_id = database.Column(database.Integer, database.ForeignKey('user.id'), nullable=False)
     movie_id = database.Column(database.Integer, database.ForeignKey('movie.id'), nullable=False)
-    # Adaugă relația explicită pentru a permite accesul item.movie
+    # Explicit relationship to allow accessing the movie object directly
     movie = database.relationship('Movie', backref='towatch_by_users', lazy=True)
     date_added = database.Column(database.DateTime, nullable=False, default=datetime.utcnow)
 
