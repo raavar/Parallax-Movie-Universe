@@ -15,20 +15,18 @@ DELIMITER = ';'
 
 def add_new_movies():
     """
-    Merges new movies from movies_to_add.csv into movies.csv,
-    ensuring uniqueness and skipping movies found in blacklist.csv.
+    Reads the file containing new movies and merges them into the main movies CSV file.
+    This process ensures no duplicates are added and respects the blacklist file.
     """
     print("--- Adding New Movies to the Database ---\n")
     
-    # Validate Source File
+    # Check if the source file for new movies exists before proceeding
     if not os.path.exists(NEW_MOVIES_CSV_PATH):
         print(f"ERROR: Source file not found: {NEW_MOVIES_CSV_PATH}")
         print("Please create movies_to_add.csv with the new movie data.")
         return
 
-    # --- Load Existing Data & Blacklist ---
-    
-    # Load the titles that are blacklisted (movies without a good poster)
+    # Load the list of blacklisted titles which are movies previously removed or flagged
     blacklist = set()
     if os.path.exists(BLACKLIST_CSV_PATH):
         with open(BLACKLIST_CSV_PATH, mode='r', encoding='utf-8') as f:
@@ -39,7 +37,7 @@ def add_new_movies():
     else:
         print("blacklist.csv not found. No blacklist applied.")
 
-    # Load existing titles from the database file (movies.csv)
+    # Load the existing movies from the main database file to prevent duplicates
     database_rows = []
     existing_titles = set()
     fieldnames = None
@@ -53,8 +51,7 @@ def add_new_movies():
     
     print(f"Loaded {len(database_rows)} existing movies from {os.path.basename(DATABASE_CSV_PATH)}.")
 
-    # --- Process New Movies ---
-    
+    # Process the new movies file and filter out duplicates or blacklisted items
     new_rows_to_add = []
     skipped_count = 0
     duplicate_count = 0
@@ -64,7 +61,7 @@ def add_new_movies():
     with open(NEW_MOVIES_CSV_PATH, mode='r', encoding='utf-8') as f:
         reader = csv.DictReader(f, delimiter=DELIMITER)
         
-        # Ensure the fieldnames match the database file if provided
+        # If the main database file was empty or missing, use headers from the new file
         if fieldnames is None:
              fieldnames = reader.fieldnames 
              
@@ -79,18 +76,16 @@ def add_new_movies():
                 blacklisted_count += 1
                 skipped_count += 1
             else:
-                # The movie is new and not blacklisted, add it
+                # The movie is unique and safe to add so append it to the list
                 new_rows_to_add.append(row)
                 existing_titles.add(title_key)
     
-    # Write Database File (Overwrite) ---
-    
+    # Combine the existing movies with the valid new movies and overwrite the database file
     final_rows = database_rows + new_rows_to_add
     
     if new_rows_to_add:
         print(f"\nAdding {len(new_rows_to_add)} new unique movies to the database file.")
         
-        # Overwrite movies.csv with the combined list
         with open(DATABASE_CSV_PATH, mode='w', encoding='utf-8', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=DELIMITER)
             writer.writeheader()
@@ -101,9 +96,7 @@ def add_new_movies():
     else:
         print("\nNo new unique movies to add.")
 
-    # --- Consume Source File ---
-    
-    # Empty the movies_to_add.csv file after consuming its content
+    # Clear the contents of the source file to indicate processing is complete
     with open(NEW_MOVIES_CSV_PATH, mode='w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames, delimiter=DELIMITER)
         writer.writeheader()
