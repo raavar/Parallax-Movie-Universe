@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4 border-bottom pb-2">Lista Mea de Vizionare ({{ watchlist_items|length }})</h2>
+    <h1 class="mb-4 border-bottom pb-2">WatchList ({{ watchlist_items|length }})</h1>
     
     {% if watchlist_items %}
         <div class="movie-list-grid">
@@ -25,19 +25,27 @@
                         </div>
 
                         <p class="small text-muted mt-auto">
-                            Adăugat pe: {{ item.date_added.strftime('%d-%m-%Y') }}
+                            Added: {{ item.date_added.strftime('%d-%m-%Y') }}
                         </p>
                         
-                        <form method="POST" action="{{ url_for('toggle_watchlist', movie_id=movie.id) }}" class="mt-2">
-                             <button type="submit" class="btn btn-sm btn-outline-danger w-100">Elimină</button>
+                        <form method="POST" action="{{ url_for('toggle_watchlist', movie_id=movie.id) }}" class="mt-2 form-center">
+                             <button type="submit" class="btn btn-sm btn-details-3d">Remove</button>
                         </form>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Lista ta este goală.</p>
-        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Explorează Catalogul</a>
+        <h3 class="text-muted" style= "text-align: center;">Your watchlist is empty.</h3>
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 80px;">
+        
+            <a href="{{ url_for('catalog') }}" 
+            class="btn btn-primary shadow-lg home-explore-btn" 
+            role="button">
+                Explore more movies
+            </a>
+            
+        </div>
     {% endif %}
 </div>
 {% endblock %}

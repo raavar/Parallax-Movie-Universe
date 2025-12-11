@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="mb-4 border-bottom pb-2">Rating-urile Tale ({{ user_ratings|length }})</h2>
+    <h1 class="mb-4 border-bottom pb-2">Your Ratings ({{ user_ratings|length }})</h1>
     
     {% if user_ratings %}
         <div class="movie-list-grid">
@@ -20,22 +20,30 @@
                     <div class="movie-card-content">
                         <h3><a href="{{ url_for('movie_details', movie_id=movie.id) }}">{{ movie.title }}</a></h3>
                         
-                        <div class="mb-2">
-                            <span class="badge bg-warning text-dark fs-6">
+                        <p class="small text-muted mb-2">
+                            Rated: {{ rating.timestamp.strftime('%d-%m-%Y') }}
+                        </p>
+                        
+                        <div class="rating-badge-container">
+                            <span class="badge badge-rating-3d">
                                 <i class="fas fa-star"></i> {{ rating.score }}/10
                             </span>
                         </div>
-                        
-                        <p class="small text-muted mt-auto">
-                            Evaluat pe: {{ rating.timestamp.strftime('%d-%m-%Y') }}
-                        </p>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Nu ai oferit încă niciun rating.</p>
-        <a href="{{ url_for('catalog') }}" class="btn btn-primary">Vezi Catalogul</a>
+        <h3 class="text-muted" style= "text-align: center;">You have not rated any movies yet.</h3>
+        <div style="width: 100%; display: flex; justify-content: center; align-items: center; margin-top: 50px; margin-bottom: 80px;">
+        
+            <a href="{{ url_for('catalog') }}" 
+            class="btn btn-primary shadow-lg home-explore-btn" 
+            role="button">
+                Explore more movies
+            </a>
+            
+        </div>
     {% endif %}
 </div>
 {% endblock %}
